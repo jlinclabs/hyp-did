@@ -25,12 +25,12 @@ export default class HypercoreClient {
     })
     console.log('bootstrapNodes', this.swarm.dht.bootstrapNodes)
 
-    this.swarm.dht.ready().then(async () => {
-      console.log('SWARM DHT READY!', {
-        bootstrapped: this.swarm.dht.bootstrapped,
-        nodes: this.swarm.dht.nodes,
-      })
-    })
+    // this.swarm.dht.ready().then(async () => {
+    //   console.log('SWARM DHT READY!', {
+    //     bootstrapped: this.swarm.dht.bootstrapped,
+    //     nodes: this.swarm.dht.nodes,
+    //   })
+    // })
 
     console.log(
       `[Hyperlinc] connecting to swarm as`,
@@ -74,9 +74,11 @@ export default class HypercoreClient {
   }
 
   async destroy(){
-    console.log('[Hyperlinc] disconnecting from swarm')
-    await this.swarm.clear()
-    await this.swarm.destroy()
+    if (this.swarm){
+      console.log('[Hyperlinc] disconnecting from swarm')
+      await this.swarm.clear()
+      await this.swarm.destroy()
+    }
   }
 
   async status(){

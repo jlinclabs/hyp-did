@@ -29,12 +29,12 @@ export default class DidClient extends HypercoreClient {
   }
 
   async _getCore(key, secretKey){
-    if (secretKey) console.log('SECRET KEY?', secretKey)
     return await this.corestore.get({ key: keyToBuffer(key), secretKey })
   }
 
   async get(did, secretKey){
     // const publicKey = didToPublicKey(did)
+    await this.ready()
     const core = await this._getCore(didToKey(did), secretKey)
     const didDocument = new DidDocument(did, core)
     if (await didDocument.exists()) return didDocument

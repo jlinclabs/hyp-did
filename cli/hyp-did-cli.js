@@ -37,12 +37,11 @@ export const commands = {
     },
     async command({ didClient, _: [did] }){
       console.log('resolving', did)
-      await didClient.ready()
+      // await didClient.ready()
       const didDocument = await didClient.get(did)
       if (!didDocument) return fail(`unabled to resolve ${did}`)
-      console.log('got', didDocument)
-      await didDocument.update()
-      console.log('updated', didDocument)
+      if (!didDocument.loaded) await didDocument.update()
+      console.log(didDocument.value)
     }
   },
   superseed: {
