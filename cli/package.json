@@ -1,10 +1,14 @@
 {
   "name": "hyp-did-cli",
+  "type": "module",
   "version": "1.0.0",
   "description": "commandline interface CLI working with DIDs on Hypercore",
   "main": "index.js",
   "scripts": {
     "test": "./scripts/test"
+  },
+  "bin": {
+    "hyp-did": "./hyp-did.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/jlinclabs/hyp-did/issues"
   },
-  "homepage": "https://github.com/jlinclabs/hyp-did#readme"
+  "homepage": "https://github.com/jlinclabs/hyp-did#readme",
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "subcommand": "^2.1.1"
+  }
 }
