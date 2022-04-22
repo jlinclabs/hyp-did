@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import HypDid from 'hyp-did'
+
 export const commands = {
   create: {
     name: 'create',
