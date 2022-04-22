@@ -29,8 +29,8 @@ didDocument === {
 ```
 
 Also see the 
-[hyp-did-cli](./hyp-did-cli#readme) 
+[hyp-did-cli](./cli#readme) 
 and 
-[hyp-did-http-server](./hyp-did-http-server#readme)
+[hyp-did-http-server](./http-server#readme)
 
 
