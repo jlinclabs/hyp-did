@@ -1,5 +1,6 @@
 {
   "name": "hyp-did",
+  "type": "module",
   "version": "1.0.0",
   "description": "DIDs on Hypercore",
   "main": "index.js",
@@ -19,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/jlinclabs/hyp-did/issues"
   },
-  "homepage": "https://github.com/jlinclabs/hyp-did#readme"
+  "homepage": "https://github.com/jlinclabs/hyp-did#readme",
+  "dependencies": {
+    "autobase": "^1.0.0-alpha.8",
+    "blessed": "^0.1.81",
+    "corestore": "^6.0.1-alpha.9",
+    "hyperswarm": "git+https://github.com/hyperswarm/hyperswarm#v3.0.2"
+  }
 }

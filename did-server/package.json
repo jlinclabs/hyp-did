@@ -1,5 +1,6 @@
 {
   "name": "hyp-did-server",
+  "type": "module",
   "version": "1.0.0",
   "description": "http server for working with DIDs on Hypercore",
   "main": "index.js",
