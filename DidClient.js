@@ -14,8 +14,9 @@ export default class DidClient extends HypercoreClient {
     if (typeof opts.indentationLvl === 'number')
       while (indent.length < opts.indentationLvl) indent += ' '
     return this.constructor.name + '(\n' +
-      indent + '  id: ' + opts.stylize(this.id, 'string') + '\n' +
-      indent + '  writable: ' + opts.stylize(this.writable, 'boolean') + '\n' +
+      indent + '  storagePath: ' + opts.stylize(this.storagePath, 'string') + '\n' +
+      indent + '  cores: ' + opts.stylize(this.corestore.cores.size, 'number') + '\n' +
+      // indent + '  writable: ' + opts.stylize(this.writable, 'boolean') + '\n' +
       indent + ')'
   }
 

@@ -16,8 +16,11 @@ $ PORT=8080 hyp-did-server start
 or
 
 ```js
-import HypDidServer from 'hyp-did-server'
-const didServer = new HypDidServer()
-didServer.listen(8080)
+import hypDidServer from 'hyp-did-server'
+const didServer = hypDidServer({
+  storagePath: './path/to/store/hypercores',
+  port: 8080,
+})
+didServer.start()
 ```
 

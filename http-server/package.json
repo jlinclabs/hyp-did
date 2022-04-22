@@ -7,6 +7,9 @@
   "scripts": {
     "test": "./scripts/test"
   },
+  "bin": {
+    "hyp-did-server": "./hyp-did-server-cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jlinclabs/hyp-did.git"
@@ -20,5 +23,11 @@
   "bugs": {
     "url": "https://github.com/jlinclabs/hyp-did/issues"
   },
-  "homepage": "https://github.com/jlinclabs/hyp-did#readme"
+  "homepage": "https://github.com/jlinclabs/hyp-did#readme",
+  "dependencies": {
+    "commander": "^9.2.0",
+    "express": "^4.17.3",
+    "express-promise-router": "^4.1.1",
+    "hyp-did": "file:.."
+  }
 }

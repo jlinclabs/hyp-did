@@ -44,6 +44,7 @@ export default class HypercoreClient {
         '[Hyperlinc] new peer connection from',
         keyToString(socket.remotePublicKey)
       )
+      console.log(this.swarm)
       this.corestore.replicate(socket, {
         keepAlive: true,
         // live?
@@ -51,6 +52,7 @@ export default class HypercoreClient {
     })
 
     this._ready = this.topicCore.ready().then(async () => {
+      console.log(this.swarm)
       console.log(`connecting to hyperlinc swarm ${keyToString(this.topicCore.discoveryKey)}`)
       this.swarm.join(this.topicCore.discoveryKey)
       // if (this.swarm.peers.size === 0){

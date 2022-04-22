@@ -22,9 +22,20 @@ export const commands = {
       full: 'Create a new did and hypercore'
     },
     async command({ didClient }){
+
       const didDocument = await didClient.create()
       console.log('created', didDocument)
       console.log(didDocument.value)
+
+      await didClient.ready()
+      setInterval(() => {
+        didClient.status().then(console.log)
+      }, 1000);
+      await new Promise(resolve => {
+        setTimeout(resolve, 9999999)
+      })
+      // TODO write the private keys somewhere we know where to look
+      //      so we can use them for updates
       // TODO take a flag to force-replicate it
     }
   },
@@ -35,13 +46,14 @@ export const commands = {
       simple: 'get did document',
       full: 'get the did document for the given did',
     },
-    async command({ didClient, _: [did] }){
+    async command({ didClient, _: [did], replicate }){
       console.log('resolving', did)
       // await didClient.ready()
       const didDocument = await didClient.get(did)
       if (!didDocument) return fail(`unabled to resolve ${did}`)
       if (!didDocument.loaded) await didDocument.update()
       console.log(didDocument.value)
+      if (replicate) await didDocument.replicate()
     }
   },
   superseed: {
@@ -108,8 +120,8 @@ function wrapCommand(cmd){
       fail(error)
     }finally{
       await args.didClient.destroy()
+      process.exit(0)
     }
-    process.exit(0)
   }
 }
 
