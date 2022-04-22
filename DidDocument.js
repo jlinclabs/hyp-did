@@ -30,8 +30,12 @@ export default class DidDocument {
     if (keyToString(this.core.key) !== this.publicKey)
       throw new Error(`key mismatch ${[keyToString(this.core.key), this.publicKey]}`)
     this._ready = true
-    const json = await this.core.get(this.core.length - 1)
-    this._value = JSON.parse(json)
+    console.log(this)
+    if (this.core.length > 0){
+      console.log('getting latest value')
+      const json = await this.core.get(this.core.length - 1)
+      this._value = JSON.parse(json)
+    }
   }
 
   get value(){

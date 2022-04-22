@@ -8,7 +8,7 @@
     "test": "./scripts/test"
   },
   "bin": {
-    "hyp-did": "./hyp-did.js"
+    "hyp-did": "./hyp-did-cli.js"
   },
   "repository": {
     "type": "git",
