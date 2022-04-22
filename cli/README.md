@@ -13,6 +13,7 @@ $ npm install -g hyp-did-cli
 $ hyp-did-cli --help
 ```
 
+### Create a DID
 
 ```bash
 $ hyp-did create
@@ -32,6 +33,8 @@ $ hyp-did create
 }
 ```
 
+### Resolve a DID
+
 ```bash
 $ hyp-did resolve 'did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28'
 {
@@ -49,12 +52,3 @@ $ hyp-did resolve 'did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28'
   "updatedAt": "2022-04-22T22:23:45.151Z"
 }
 ```
-
-or
-
-```js
-import HypDidServer from 'hyp-did-server'
-const didServer = new HypDidServer()
-didServer.listen(8080)
-```
-
