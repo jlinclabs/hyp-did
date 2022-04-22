@@ -51,6 +51,19 @@ export default class DidDocument {
 
 
   async create(){
+    await this._append({
+      "@context": "https://w3id.org/did/v1",
+      id: this.did,
+      created: new Date,
+      publicKey: [
+        {
+          id: this.did,
+          type: 'ed25519', // ???
+          owner: this.did,
+          publicKeyBase64: this.publicKey,
+        },
+      ]
+    })
     await this.update()
     // write to it
     // ¿ ensure it was replicated to a permanode ?
@@ -59,6 +72,7 @@ export default class DidDocument {
 
 
   async _append(newValue){
+    // await this.update()
     newValue = { ...newValue, updatedAt: new Date }
     const json = JSON.stringify(newValue)
     return await this.core.append([json])

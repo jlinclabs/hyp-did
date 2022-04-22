@@ -22,9 +22,10 @@ export const commands = {
       full: 'Create a new did and hypercore'
     },
     async command({ didClient }){
-      await didClient.ready()
       const didDocument = await didClient.create()
       console.log('created', didDocument)
+      console.log(didDocument.value)
+      // TODO take a flag to force-replicate it
     }
   },
   resolve: {
@@ -34,8 +35,14 @@ export const commands = {
       simple: 'get did document',
       full: 'get the did document for the given did',
     },
-    async command(args){
-      console.log('resolve', args)
+    async command({ didClient, _: [did] }){
+      console.log('resolving', did)
+      await didClient.ready()
+      const didDocument = await didClient.get(did)
+      if (!didDocument) return fail(`unabled to resolve ${did}`)
+      console.log('got', didDocument)
+      await didDocument.update()
+      console.log('updated', didDocument)
     }
   },
   superseed: {
@@ -97,10 +104,13 @@ function wrapCommand(cmd){
     })
 
     try{
-      return await command(args)
+      await command(args)
     }catch(error){
       fail(error)
+    }finally{
+      await args.didClient.destroy()
     }
+    process.exit(0)
   }
 }
 
