@@ -1,0 +1,23 @@
+{
+  "name": "hyp-did",
+  "version": "1.0.0",
+  "description": "DIDs on Hypercore",
+  "main": "index.js",
+  "scripts": {
+    "test": "./scripts/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jlinclabs/hyp-did.git"
+  },
+  "keywords": [
+    "hypercore",
+    "did"
+  ],
+  "author": "Jared Grippe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jlinclabs/hyp-did/issues"
+  },
+  "homepage": "https://github.com/jlinclabs/hyp-did#readme"
+}
