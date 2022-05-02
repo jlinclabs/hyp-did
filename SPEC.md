@@ -66,8 +66,20 @@ you must create unique crypto keys capable of signing strings
 4. the app creates a new DID Document representing the app's side of the new user account
 5. the user's app creates a new DID document represent the user's side of the new user account
 
+
 ```mermaid
-graph LR;
-    A[app]-->C[account];
-    B[actor]-->C;
+sequenceDiagram
+    actor Alice
+    participant AliceAgent
+    participant App
+
+    Alice-->>AliceAgent: Create a new identity
+    AliceAgent-->>Alice: Gets back a DID
+    Alice->>App: I want to sign up for an accont, here is my did
+    Note left of App: lookup DID and get encryption keys
+    App->>AliceAgent: returns an account did encrypted with the did document's encrypting keys
+    Note left of AliceAgent: verify payload
+    Note left of AliceAgent: store new account did
+    AliceAgent-->>Alice: new account listed in app
+    Alice->>App: clicks login and is redirect to the app
 ```
