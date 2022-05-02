@@ -29,11 +29,16 @@
   - this is your identity keypair
 0. store the secret in a key vault
 0. ask a jlinx did server to host a DID for you
-  - HTTP post containing your public key
-  - server creates own signing keys, stores secret key
-    - this is the kypercore keypair
-  - returns did = `did:jlinx:${hypercorePublicKey}`
-0. sign a claim that you exist
+  - HTTP post containing 
+    - your did document as JSON string
+      - *requires at least one signing key*
+    - signature of the JSON string
+  - server then:
+    0. creates own signing keys
+    0. stores secret key
+    0. adds the did to the did docment
+    0. appends first message to micro-ledger
+    0. return the did = `did:jlinx:${hypercorePublicKey}`
 0. post append event to did server
   - server checks that the signature is valid
   - uses its own privately stored secret keys to append to your hypercore for you
