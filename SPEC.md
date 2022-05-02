@@ -60,11 +60,45 @@ you must create unique crypto keys capable of signing strings
 
 ### Signup
 
+
+signign up with jlinx is the same as Oauth in-that most apps dont need this link to make you an account
+so you could link one or more later.
+
+For single-sign-on to work we need either/both a web app to redirect to or a native app that handles jlinx://??? schema links
+
+Maybe we can do this with browser plugins?
+
+
+1. Alice visits example.com
+2. Alice clicks "login with your own identity" === jlinx://${did for example.com}/login
+3. Alice's JLINX Agent app launches to handle the link
+4. Alice see's a new account listed in her app with a login button
+5. Alice click's the login button and it opens a new tab in her browser
+
+**we should do the magic login thing so this works across devices**
+
+
+1. Alice visits example.com
+2. Alice clicks signup
+3. Alice is prompted from a list of signup methods
+4. Alice chooses "Signup with a DID"
+5. Alice is prompted for her DID
+6. Alice posts her did to the server via a form
+7. example.com resolves her did document
+8. ??? alice needs to sign something to prove this DID is hers ???
+   Ideally we would send the user to an app either via an http redirect to a web app or a custom url scheme jlinx://?????
+
+
+This presuposes that the app has already declaired a did
+
 1. an app claims to exist
 2. an actor claims to exist
-3. the actor does a signup ritual exchanging dids
-4. the app creates a new DID Document representing the app's side of the new user account
-5. the user's app creates a new DID document represent the user's side of the new user account
+3. the actor does a signup ritual providing a DID
+4. The app gets the did document and verifies its legit and has all the needed keys  
+4.1. the app could render a page asking for username, credit card, or whatever is required
+5. The app creates a local user account and associates it with the user's given DID
+6. The user is logged in
+
 
 
 ```mermaid
@@ -76,7 +110,10 @@ sequenceDiagram
     Alice-->>AliceAgent: Create a new identity
     AliceAgent-->>Alice: Gets back a DID
     Alice->>App: I want to sign up for an accont, here is my did
-    Note left of App: lookup DID and get encryption keys
+    Note left of App: get DID Document
+    App->>Alice: What username do you want?
+    Alice->>App: I want username "Alice42"
+    App->>Alice: Account created
     App->>AliceAgent: returns an account did encrypted with the did document's encrypting keys
     Note left of AliceAgent: verify payload
     Note left of AliceAgent: store new account did
