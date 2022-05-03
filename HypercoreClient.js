@@ -5,14 +5,19 @@ import dht from '@hyperswarm/dht'
 import { keyToString, keyToBuffer, keyToDid } from './util.js'
 
 // TODO change this to a derivation of "hyp-did"
-const TOPIC_KEY = keyToBuffer('604d03ea2045c1adfcb6adad02d71667e03c27ec846fe4f5c4d912c10464aea0')
+// const TOPIC_KEY = keyToBuffer('604d03ea2045c1adfcb6adad02d71667e03c27ec846fe4f5c4d912c10464aea0')
+
+// console.log(`TOPIC_KEY`, keyToString(TOPIC_KEY))
+
+// const topic = crypto.createHash('sha256').update('Insert a topic name here').digest()
 
 export default class HypercoreClient {
   constructor(options = {}){
     const { storagePath } = options
     this.storagePath = storagePath
     this.corestore = new Corestore(this.storagePath)
-    this.topicCore = this.corestore.get({ key: TOPIC_KEY })
+    this.topic = Buffer.from('thisisthetopicfordidsonhypercore')
+    // this.topicCore = this.corestore.get({ key: TOPIC_KEY })
   }
 
   async connect(){
@@ -51,10 +56,19 @@ export default class HypercoreClient {
       })
     })
 
-    this._ready = this.topicCore.ready().then(async () => {
+    this._ready = this.swarm.join(this.topic).then(() => {
+    // this._ready = this.topicCore.ready().then(async () => {
       // console.log(this.swarm)
       console.log(`connecting to hyperlinc swarm ${keyToString(this.topicCore.discoveryKey)}`)
-      this.swarm.join(this.topicCore.discoveryKey)
+      const peerDiscovery = this.swarm.join(this.topicCore.discoveryKey)
+      console.log(`peerDiscovery`, peerDiscovery)
+      peerDiscovery.flushed().then(() => {
+        console.log(`peerDiscovery flushed!`)
+      })
+
+
+      // this.swarm.status(topic)
+
       // if (this.swarm.peers.size === 0){
       //   console.log('waiting for first peer…')
       //   await new Promise((resolve, reject) => {
@@ -68,6 +82,7 @@ export default class HypercoreClient {
     })
 
     await this.swarm.listen()
+    console.log('listening…')
   }
 
   async ready(){

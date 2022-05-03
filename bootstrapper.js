@@ -1,33 +1,75 @@
 #!/usr/bin/env node
 'use strict';
 
-import DHT from '@hyperswarm/dht'
+import Hyperswarm from 'hyperswarm'
+import { keyToString, keyToBuffer, keyToDid } from './util.js'
 
-const PORT = process.env.PORT || 49736
+const swarm = new Hyperswarm()
+console.log('starting swarm boostrap server as', keyToString(swarm.keyPair.publicKey))
+const topic = Buffer.from('thisisthetopicfordidsonhypercore')
 
-const bootstrapper = DHT.bootstrapper(PORT, {
-  ephemeral: true,
-  seed: DHT.hash(Buffer.from('hyperlinc')),
+swarm.on('connection', function (connection, info) {
+  const id = keyToString(connection.remotePublicKey)
+  console.log('connection open:', id)
+  // connection.on('open', () => {
+
+  // })
+  connection.on('close', () => {
+    console.error('connection close:', id)
+  })
+
+  connection.on('error', error => {
+    console.error('connection error:', id, error)
+  })
+  // Do something with `connection`
+  // `info` is a PeerInfo object
 })
 
-bootstrapper.ready().then(() => {
-  console.log(
-    'Hyperswarm bootstrapper running on port',
-    bootstrapper.address(),
-  )
-})
-
-bootstrapper.on('add-node', node => {
-  console.log('node added', node.id.toString('hex'))
-})
-
-bootstrapper.on('remove-node', node => {
-  console.log('node removed', node.id.toString('hex'))
-})
+const discovery = swarm.join(topic, { server: true })
 
 process.once('SIGINT', async function () {
-  console.log('Closing server...')
-  await bootstrapper.destroy()
+  console.log('destroying boostrapper...')
+  await Promise.all([
+    swarm.flush(),
+    discovery.destroy(),
+  ])
   process.exit(0)
 })
+
+discovery.flushed().then(async () => {
+  console.log('discovery flushed')
+  // console.log('status:', await swarm.status(topic))
+})
+
+
+
+// import DHT from '@hyperswarm/dht'
+
+// const PORT = process.env.PORT || 49736
+
+// const bootstrapper = DHT.bootstrapper(PORT, {
+//   ephemeral: true,
+//   seed: DHT.hash(Buffer.from('hyperlinc')),
+// })
+
+// bootstrapper.ready().then(() => {
+//   console.log(
+//     'Hyperswarm bootstrapper running on port',
+//     bootstrapper.address(),
+//   )
+// })
+
+// bootstrapper.on('add-node', node => {
+//   console.log('node added', node.id.toString('hex'))
+// })
+
+// bootstrapper.on('remove-node', node => {
+//   console.log('node removed', node.id.toString('hex'))
+// })
+
+// process.once('SIGINT', async function () {
+//   console.log('Closing server...')
+//   await bootstrapper.destroy()
+//   process.exit(0)
+// })
 
