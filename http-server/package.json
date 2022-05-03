@@ -5,6 +5,8 @@
   "description": "http server for working with DIDs on Hypercore",
   "main": "index.js",
   "scripts": {
+    "start": "./scripts/start.js",
+    "dev:start": "nodemon ./scripts/start.js",
     "test": "./scripts/test"
   },
   "bin": {

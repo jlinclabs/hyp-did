@@ -73,9 +73,9 @@ Maybe we can do this with browser plugins?
 2. Alice clicks "login with your own identity" === jlinx://${did for example.com}/login
 3. Alice's JLINX Agent app launches to handle the link
 4. Alice see's a new account listed in her app with a login button
-5. Alice click's the login button and it opens a new tab in her browser
+5. Alice is logged in
 
-**we should do the magic login thing so this works across devices**
+**we should do the thing where the originial page gets logged in once you touch the app**
 
 
 1. Alice visits example.com
