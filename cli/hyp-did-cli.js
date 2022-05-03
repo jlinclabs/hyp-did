@@ -29,6 +29,9 @@ export const commands = {
 
       await didClient.ready()
 
+
+      await new Promise((x,y) => {})
+
       // setInterval(() => {
       //   didClient.status().then(console.log)
       // }, 1000);

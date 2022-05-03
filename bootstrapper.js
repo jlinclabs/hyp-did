@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const DHT = require('@hyperswarm/dht')
+import DHT from '@hyperswarm/dht'
 
 const PORT = process.env.PORT || 49736
 
