@@ -3,10 +3,10 @@
 
 import Hyperswarm from 'hyperswarm'
 import { keyToString, keyToBuffer, keyToDid } from './util.js'
+import topic from './topic.js'
 
 const swarm = new Hyperswarm()
 console.log('starting swarm boostrap server as', keyToString(swarm.keyPair.publicKey))
-const topic = Buffer.from('thisisthetopicfordidsonhypercore')
 
 swarm.on('connection', function (connection, info) {
   const id = keyToString(connection.remotePublicKey)
@@ -15,7 +15,7 @@ swarm.on('connection', function (connection, info) {
 
   // })
   connection.on('close', () => {
-    console.error('connection close:', id)
+    console.log('connection close:', id)
   })
 
   connection.on('error', error => {
@@ -25,13 +25,16 @@ swarm.on('connection', function (connection, info) {
   // `info` is a PeerInfo object
 })
 
+console.log(`joining topic: "${topic}"`)
+
 const discovery = swarm.join(topic, { server: true })
 
 process.once('SIGINT', async function () {
   console.log('destroying boostrapper...')
   await Promise.all([
-    swarm.flush(),
+    // swarm.flush(),
     discovery.destroy(),
+    swarm.destroy(),
   ])
   process.exit(0)
 })
