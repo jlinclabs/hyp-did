@@ -3,6 +3,7 @@ import Hyperswarm from 'hyperswarm'
 import crypto from 'hypercore-crypto'
 import dht from '@hyperswarm/dht'
 import { keyToString, keyToBuffer, keyToDid } from './util.js'
+import topic from './topic.js'
 
 // TODO change this to a derivation of "hyp-did"
 // const TOPIC_KEY = keyToBuffer('604d03ea2045c1adfcb6adad02d71667e03c27ec846fe4f5c4d912c10464aea0')
@@ -16,7 +17,6 @@ export default class HypercoreClient {
     const { storagePath } = options
     this.storagePath = storagePath
     this.corestore = new Corestore(this.storagePath)
-    this.topic = Buffer.from('thisisthetopicfordidsonhypercore')
     // this.topicCore = this.corestore.get({ key: TOPIC_KEY })
   }
 
@@ -24,9 +24,9 @@ export default class HypercoreClient {
     const seed = dht.hash(Buffer.from(this.storagePath)) // TODO add more uniqueness here
     this.swarm = new Hyperswarm({
       seed,
-      bootstrap: [
-        { host: '127.0.0.1', port: 49736 },
-      ]
+      // bootstrap: [
+      //   { host: '127.0.0.1', port: 49736 },
+      // ]
     })
     console.log('bootstrapNodes', this.swarm.dht.bootstrapNodes)
 
@@ -56,33 +56,15 @@ export default class HypercoreClient {
       })
     })
 
-    this._ready = this.swarm.join(this.topic).then(() => {
-    // this._ready = this.topicCore.ready().then(async () => {
-      // console.log(this.swarm)
-      console.log(`connecting to hyperlinc swarm ${keyToString(this.topicCore.discoveryKey)}`)
-      const peerDiscovery = this.swarm.join(this.topicCore.discoveryKey)
-      console.log(`peerDiscovery`, peerDiscovery)
-      peerDiscovery.flushed().then(() => {
-        console.log(`peerDiscovery flushed!`)
-      })
-
-
-      // this.swarm.status(topic)
-
-      // if (this.swarm.peers.size === 0){
-      //   console.log('waiting for first peer…')
-      //   await new Promise((resolve, reject) => {
-      //     this.swarm.once('connection', () => { resolve() })
-      //     setTimeout(
-      //       () => { console.error('timeout waiting for first hyperswarm connection') },
-      //       60 * 1000
-      //     )
-      //   })
-      // }
-    })
-
-    await this.swarm.listen()
-    console.log('listening…')
+    console.log(`connecting to hyperlinc swarm as ${keyToString(this.swarm.keyPair.publicKey)}`)
+    console.log(`joining topic: "${topic}"`)
+    this.discovery = this.swarm.join(topic)
+    console.log('flushing discovery…')
+    this._ready = this.discovery.flushed()
+    console.log('flushed!')
+    // console.log('.listed')
+    // await this.swarm.listen()
+    // console.log('listening…')
   }
 
   async ready(){

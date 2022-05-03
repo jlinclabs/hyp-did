@@ -5,7 +5,9 @@ import Hyperswarm from 'hyperswarm'
 import { keyToString, keyToBuffer, keyToDid } from './util.js'
 import topic from './topic.js'
 
-const swarm = new Hyperswarm()
+const swarm = new Hyperswarm({
+  // port ????
+})
 console.log('starting swarm boostrap server as', keyToString(swarm.keyPair.publicKey))
 
 swarm.on('connection', function (connection, info) {

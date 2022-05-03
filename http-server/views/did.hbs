@@ -1,7 +1,11 @@
 {{#if didDocument}}
   <h2>DID</h2>
   <p>DID={{did}}</p>
-  <textarea>{{didDocument}}</textarea>
+  <p>
+    <textarea
+      style="width: 100%;height: 100vh;white-space: pre-wrap;"
+    >{{json}}</textarea>
+  </p>
 {{else}}
   <h2>DID NOT FOUND</h2>
   <p>DID={{did}}</p>

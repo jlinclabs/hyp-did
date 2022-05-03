@@ -82,7 +82,8 @@ export default function createHypDidHttpServer(opts){
         return res.json({ error: `unabled to resolve DID=${did}` })
     }
     if (!didDocument.loaded) await didDocument.update()
-    if (req.accepts('html')) return res.render('did', { did, didDocument })
+    if (req.accepts('html')) return res.render('did', {
+      did, didDocument, json: JSON.stringify(didDocument.value, null, 2) })
     if (req.accepts('json')) return res.json(didDocument.value)
     next()
   })
