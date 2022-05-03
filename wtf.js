@@ -18,16 +18,16 @@ const did = 'did:hyp:7HD8ACcToEtnDYNFuQ38c3UuglDirVAlRrN-C_ALB65'
 const keyAsHex = 'ec70fc002713a04b670d8345b90dfc73752e8250e2ad502546b37e0bf00b07ae'
 const keyAsB64 = '7HD8ACcToEtnDYNFuQ38c3UuglDirVAlRrN-C_ALB65'
 
-console.log(`DID=${did}`)
-console.log(`keyAsB64=${keyAsB64}`)
-console.log(`keyAsHex=${keyAsHex}`)
-console.log(`keyAsB64=${keyToString(keyToBuffer(keyAsB64))}`)
-console.log(`keyToBuffer("${keyAsB64}") ->`, keyToBuffer(keyAsB64))
+// console.log(`DID=${did}`)
+// console.log(`keyAsB64=${keyAsB64}`)
+// console.log(`keyAsHex=${keyAsHex}`)
+// console.log(`keyAsB64=${keyToString(keyToBuffer(keyAsB64))}`)
+// console.log(`keyToBuffer("${keyAsB64}") ->`, keyToBuffer(keyAsB64))
 
-console.assert(
-  didToKey(did) === keyAsB64,
-  `expected\n"${didToKey(did)}"\n===\n"${keyAsB64}"`,
-)
+// console.assert(
+//   didToKey(did) === keyAsB64,
+//   `expected\n"${didToKey(did)}"\n===\n"${keyAsB64}"`,
+// )
 
 console.assert(
   keyToString(keyToBuffer(keyAsB64)) === keyAsB64,
