@@ -28,14 +28,17 @@ export const commands = {
       console.log(didDocument.value)
 
       await didClient.ready()
-      setInterval(() => {
-        didClient.status().then(console.log)
-      }, 1000);
-      await new Promise(resolve => {
-        setTimeout(resolve, 9999999)
-      })
+
+      // setInterval(() => {
+      //   didClient.status().then(console.log)
+      // }, 1000);
+      // await new Promise(resolve => {
+      //   setTimeout(resolve, 9999999)
+      // })
+
       // TODO write the private keys somewhere we know where to look
       //      so we can use them for updates
+      //              doesnt the corestore do this?
       // TODO take a flag to force-replicate it
     }
   },
