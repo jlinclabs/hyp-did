@@ -9,6 +9,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import chalk from 'chalk'
+import fetch from 'node-fetch'
 import { DidClient } from 'hyp-did'
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(fileURLToPath(import.meta.url), '../../package.json'), 'utf8'))
@@ -24,12 +25,14 @@ export const commands = {
     async command({ didClient }){
 
       const didDocument = await didClient.create()
+      const { did } = didDocument
       console.log('created', didDocument)
       console.log(didDocument.value)
 
-      // await didClient.ready()
+      await didClient.ready()
 
-      await fetch(`http://localhost:59736/${did}`)
+      const didDocument2 = await replicate(didDocument.did)
+      console.log({ didDocument2 })
 
       // await new Promise((x,y) => {})
 
@@ -172,4 +175,20 @@ function usage(cmd){
 
 function simple (cmd) {
   return `${chalk.bold(`${process.title} ${cmd.name}`)} ${cmd.usage.simple ? `${cmd.usage.simple} -` : `-`} ${cmd.description}`
+}
+
+
+async function replicate(did){
+  console.log(`replicating DID="${did}"…`)
+  const start = Date.now()
+  while (Date.now() - start < 60000){
+    const response = await fetch(`http://localhost:59736/${did}`, {
+      method: 'get',
+      headers: {'Accept': 'application/json'}
+    })
+    const didDocument2 = await response.json()
+    console.log('REP RES?->', didDocument2)
+    if (didDocument2 && didDocument2.did === did) return didDocument2
+  }
+  console.log(`replicated DID="${did}"`)
 }

@@ -26,6 +26,7 @@
   "homepage": "https://github.com/jlinclabs/hyp-did#readme",
   "dependencies": {
     "chalk": "^5.0.1",
+    "node-fetch": "^3.2.4",
     "hyp-did": "file:..",
     "subcommand": "^2.1.1"
   }

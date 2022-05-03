@@ -30,12 +30,6 @@ export default class DidDocument {
 
   async update(){
     await this.core.update()
-    console.log({
-      'this.core.key': this.core.key,
-      'keyToString(this.core.key)': keyToString(this.core.key),
-      'this.core.key HEX': this.core.key.toString('hex'),
-      'this.publicKey': this.publicKey,
-    })
     if (keyToString(this.core.key) !== this.publicKey)
       throw new Error(`key mismatch ${[keyToString(this.core.key), this.publicKey]}`)
     this.loaded = true
