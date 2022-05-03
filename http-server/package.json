@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "./scripts/start.js",
-    "dev:start": "nodemon -w ../ --exec ./scripts/start.js",
+    "dev:start": "nodemon -w ../ --signal SIGTERM --exec ./scripts/start.js",
     "test": "./scripts/test"
   },
   "bin": {

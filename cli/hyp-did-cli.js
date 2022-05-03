@@ -27,10 +27,11 @@ export const commands = {
       console.log('created', didDocument)
       console.log(didDocument.value)
 
-      await didClient.ready()
+      // await didClient.ready()
 
+      await fetch(`http://localhost:59736/${did}`)
 
-      await new Promise((x,y) => {})
+      // await new Promise((x,y) => {})
 
       // setInterval(() => {
       //   didClient.status().then(console.log)

@@ -28,7 +28,7 @@ export default class HypercoreClient {
       //   { host: '127.0.0.1', port: 49736 },
       // ]
     })
-    console.log('bootstrapNodes', this.swarm.dht.bootstrapNodes)
+    // console.log('bootstrapNodes', this.swarm.dht.bootstrapNodes)
 
     // this.swarm.dht.ready().then(async () => {
     //   console.log('SWARM DHT READY!', {
@@ -73,9 +73,10 @@ export default class HypercoreClient {
   }
 
   async destroy(){
+    console.log('[Hyperlinc] destroying!')
     if (this.swarm){
       console.log('[Hyperlinc] disconnecting from swarm')
-      await this.swarm.clear()
+      // await this.swarm.clear()
       await this.swarm.destroy()
     }
   }

@@ -74,6 +74,7 @@ export default function createHypDidHttpServer(opts){
     console.log('resolving', did)
     await app.didClient.ready()
     const didDocument = await app.didClient.get(did)
+    console.log('???', didDocument)
     if (!didDocument){
       res.status(404)
       if (req.accepts('html'))
