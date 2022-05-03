@@ -1,0 +1,10 @@
+{{#if didDocument}}
+  <h2>DID</h2>
+  <p>DID={{did}}</p>
+  <textarea>{{didDocument}}</textarea>
+{{else}}
+  <h2>DID NOT FOUND</h2>
+  <p>DID={{did}}</p>
+{{/if}}
+<a href="/">back</a>
+<button onclick="location.reload()">retry</button>

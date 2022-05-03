@@ -1,6 +1,12 @@
+import Path from 'path'
+import { fileURLToPath } from 'url'
 import express from 'express'
 import ExpressPromiseRouter from 'express-promise-router'
+import hbs from 'express-hbs'
+import bodyParser from 'body-parser'
 import { DidClient } from 'hyp-did'
+
+const __dirname = Path.resolve(fileURLToPath(import.meta.url), '..')
 
 export default function createHypDidHttpServer(opts){
   const {
@@ -37,6 +43,19 @@ export default function createHypDidHttpServer(opts){
     await Promise.all(promises)
   }
 
+
+  app.use(express.static(__dirname + '/public'));
+  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json({ }))
+
+  // RENDER HTML
+  app.engine('hbs', hbs.express4({
+    // partialsDir: __dirname + `${views}/partials`,
+    defaultLayout: __dirname + `/views/layout.hbs`,
+  }))
+  app.set('view engine', 'hbs')
+  app.set('views', __dirname + '/views')
+
   // ROUTES
   app.routes = new ExpressPromiseRouter
   app.use(app.routes)
@@ -44,13 +63,7 @@ export default function createHypDidHttpServer(opts){
   app.routes.get('/', async (req, res, next) => {
     const { did } = req.query
     if (did && did.startsWith('did:')) return res.redirect(`/${did}`)
-    if (req.accepts('html')) return res.send(`
-      <h1>DID Resolver</h1>
-      <form method="get" action="/">
-        <p><input type="text" name="did" style="min-width: 80vw" placeholder="did:hyp:Ekafry3EaP1tHuZI6pSSLyGBHAycke1uqZCUspScW_A" /></p>
-        <p><input type="submit" value="lookup" /></p>
-      </form>
-    `)
+    if (req.accepts('html')) return res.render('index')
     next()
   })
 
@@ -63,23 +76,13 @@ export default function createHypDidHttpServer(opts){
     const didDocument = await app.didClient.get(did)
     if (!didDocument){
       res.status(404)
-      if (req.accepts('html')) {
-        return res.send(`
-          <h1>DID Not Found<h1>
-          <p><input type="text" value="${did}"/></p>
-        `)
-      }
-      if (req.accepts('json')) {
-        return res.json({
-          error: `unabled to resolve DID=${did}`,
-        })
-      }
+      if (req.accepts('html'))
+        return res.render('did', { did })
+      if (req.accepts('json'))
+        return res.json({ error: `unabled to resolve DID=${did}` })
     }
     if (!didDocument.loaded) await didDocument.update()
-    if (req.accepts('html')) return res.send(`
-
-
-    `)
+    if (req.accepts('html')) return res.render('did', { did, didDocument })
     if (req.accepts('json')) return res.json(didDocument.value)
     next()
   })
