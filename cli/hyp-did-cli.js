@@ -14,6 +14,9 @@ import { DidClient } from 'hyp-did'
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(fileURLToPath(import.meta.url), '../../package.json'), 'utf8'))
 
+// MOVE THIS TO A ~/.hyp-did-cli/config
+const HOSTS = (process.env.HYP_DID_SERVERS || '').spit(',')
+
 export const commands = {
   create: {
     name: 'create',
@@ -28,8 +31,7 @@ export const commands = {
       console.log(didDocument.value)
       console.log(`replicating…`)
       await didClient.ready()
-      const didDocument2 = await replicate(didDocument.did)
-      console.log({ didDocument2 })
+      await Promise.all(HOSTS.map(host => replicate(host, didDocument.did)))
     }
   },
   resolve: {
@@ -161,8 +163,8 @@ function simple (cmd) {
 }
 
 
-async function replicate(did){
-  const url = `http://localhost:59736/${did}`
+async function replicate(host, did){
+  const url = `${host}/${did}`
   const start = Date.now()
   while (Date.now() - start < 60000){
     const response = await fetch(url, {

@@ -5,6 +5,7 @@ import ExpressPromiseRouter from 'express-promise-router'
 import hbs from 'express-hbs'
 import bodyParser from 'body-parser'
 import { DidClient } from 'hyp-did'
+import { isValidDID } from 'hyp-did/util.js'
 
 const __dirname = Path.resolve(fileURLToPath(import.meta.url), '..')
 
@@ -69,6 +70,13 @@ export default function createHypDidHttpServer(opts){
 
   app.routes.get(/^\/(did:.+)$/, async (req, res, next) => {
     const did = req.params[0]
+    if (!isValidDID(did)){
+      res.status(400) // bad request
+      if (req.accepts('html'))
+        return res.render('error', { error: `invalid did DID=${did}` })
+      if (req.accepts('json'))
+        return res.json({ error: `unabled to resolve DID=${did}` })
+    }
     // res.send(`resolving did="${did}"`)
 
     console.log('resolving', did)
