@@ -12,7 +12,7 @@ console.log('starting swarm boostrap server as', keyToString(swarm.keyPair.publi
 
 swarm.on('connection', function (connection, info) {
   const id = keyToString(connection.remotePublicKey)
-  console.log('connection open:', id, info)
+  console.log('connection open:', id)
   // connection.on('open', () => {
 
   // })
