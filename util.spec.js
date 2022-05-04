@@ -19,3 +19,8 @@ function test(){
 
 let count = 1000 * 10
 while (count--) test()
+
+
+
+// did:hyp:xzBJSi9S357xbBIME0aG_SZXM_Ncx3--4tEaSHtfBic
+// did:hyp:-------------------------------------------

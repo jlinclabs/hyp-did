@@ -57,6 +57,14 @@ export default function createHypDidHttpServer(opts){
   app.set('view engine', 'hbs')
   app.set('views', __dirname + '/views')
 
+  function renderError(res, error, statusCode = 401){
+    console.error(error)
+    res.status(statusCode)
+    if (req.accepts('html')) return res.render('error', { error })
+    // if (req.accepts('json'))
+    else return res.json({ error })
+  }
+
   // ROUTES
   app.routes = new ExpressPromiseRouter
   app.use(app.routes)
@@ -70,31 +78,18 @@ export default function createHypDidHttpServer(opts){
 
   app.routes.get(/^\/(did:.+)$/, async (req, res, next) => {
     const did = req.params[0]
-    if (!isValidDID(did)){
-      res.status(400) // bad request
-      if (req.accepts('html'))
-        return res.render('error', { error: `invalid did DID=${did}` })
-      if (req.accepts('json'))
-        return res.json({ error: `unabled to resolve DID=${did}` })
-    }
-    // res.send(`resolving did="${did}"`)
-
+    if (!isValidDID(did)) return renderError(res, `invalid did DID=${did}`, 400)
     console.log('resolving', did)
     await app.didClient.ready()
     const didDocument = await app.didClient.get(did)
-    console.log('???', didDocument)
-    if (!didDocument){
-      res.status(404)
-      if (req.accepts('html'))
-        return res.render('did', { did })
-      if (req.accepts('json'))
-        return res.json({ error: `unabled to resolve DID=${did}` })
-    }
+    if (!didDocument) return renderError(res, `unable to resolve DID=${did}`, 404)
+    console.log('updating', did)
     if (!didDocument.loaded) await didDocument.update()
+    console.log('resolved', didDocument.value)
     if (req.accepts('html')) return res.render('did', {
-      did, didDocument, json: JSON.stringify(didDocument.value, null, 2) })
-    if (req.accepts('json')) return res.json(didDocument.value)
-    next()
+      did, json: JSON.stringify(didDocument.value, null, 2)
+    })
+    return res.json(didDocument.value)
   })
 
   return app
