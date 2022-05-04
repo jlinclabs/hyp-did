@@ -35,7 +35,7 @@ export default class DidDocument {
     this.loaded = true
     if (this.core.length > 0){
       const json = await this.core.get(this.core.length - 1)
-      this._value = JSON.parse(json)
+      this._value = {...JSON.parse(json), did: this.did}
     }
   }
 

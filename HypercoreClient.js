@@ -44,6 +44,9 @@ export default class HypercoreClient {
 
     process.on('SIGTERM', () => { this.destroy() })
 
+    this.swarm.once('connection', () => {
+
+    })
     this.swarm.on('connection', (socket) => {
       console.log(
         '[Hyperlinc] new peer connection from',
@@ -60,8 +63,16 @@ export default class HypercoreClient {
     console.log(`joining topic: "${topic}"`)
     this.discovery = this.swarm.join(topic)
     console.log('flushing discovery…')
-    this._ready = this.discovery.flushed()
-    console.log('flushed!')
+    this._ready = this.discovery.flushed().then(async () => {
+      console.log('flushed!')
+      console.log('connected?', this.swarm.connections.size)
+      if (this.swarm.connections.size > 0) return
+      await new Promise((resolve, reject) => {
+        this.swarm.once('connection', () => { resolve() })
+        setTimeout(() => { reject(new Error(`timeout waiting for peers`)) }, 6000)
+      })
+      console.log(`connected to ${this.swarm.connections.size} peers :D`)
+    })
     // console.log('.listed')
     // await this.swarm.listen()
     // console.log('listening…')
