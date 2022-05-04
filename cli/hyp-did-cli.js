@@ -15,7 +15,7 @@ import { DidClient } from 'hyp-did'
 const packageJson = JSON.parse(fs.readFileSync(path.join(fileURLToPath(import.meta.url), '../../package.json'), 'utf8'))
 
 // MOVE THIS TO A ~/.hyp-did-cli/config
-const HOSTS = (process.env.HYP_DID_SERVERS || '').spit(',')
+const HOSTS = (process.env.HYP_DID_SERVERS || '').split(',').filter(x => x)
 
 export const commands = {
   create: {
@@ -29,8 +29,10 @@ export const commands = {
       const didDocument = await didClient.create()
       const { did } = didDocument
       console.log(didDocument.value)
+      if (HOSTS.length === 0) return
       console.log(`replicating…`)
       await didClient.ready()
+      console.log({ HOSTS })
       await Promise.all(HOSTS.map(host => replicate(host, didDocument.did)))
     }
   },
@@ -166,13 +168,20 @@ function simple (cmd) {
 async function replicate(host, did){
   const url = `${host}/${did}`
   const start = Date.now()
+  let didDocument
   while (Date.now() - start < 60000){
     const response = await fetch(url, {
       method: 'get',
       headers: {'Accept': 'application/json'}
     })
-    const didDocument2 = await response.json()
-    if (didDocument2 && didDocument2.did === did) return didDocument2
+    didDocument = await response.json()
+    console.log(didDocument)
+    if (!didDocument || didDocument.error) continue
+    if (didDocument && didDocument.did === did)
+      return console.log(`replicated at ${url}`)
   }
-  console.log(`replicated at ${url}`)
+  if (!didDocument || didDocument.error)
+    throw new Error(`unable to replicated ${did} on ${host}: ${didDocument.error || ''}`)
+  if (didDocument.did !== did)
+      throw new Error(`did mismatch. expected ${didDocument.did} === ${did}`)
 }
