@@ -67,10 +67,11 @@ export default class HypercoreClient {
       console.log('flushed!')
       console.log('connected?', this.swarm.connections.size)
       if (this.swarm.connections.size > 0) return
-      await new Promise((resolve, reject) => {
-        this.swarm.once('connection', () => { resolve() })
-        setTimeout(() => { reject(new Error(`timeout waiting for peers`)) }, 6000)
-      })
+      await this.swarm.flush()
+      // await new Promise((resolve, reject) => {
+      //   this.swarm.once('connection', () => { resolve() })
+      //   setTimeout(() => { reject(new Error(`timeout waiting for peers`)) }, 6000)
+      // })
       console.log(`connected to ${this.swarm.connections.size} peers :D`)
     })
     // console.log('.listed')

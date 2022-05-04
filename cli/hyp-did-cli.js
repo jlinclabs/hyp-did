@@ -23,30 +23,13 @@ export const commands = {
       full: 'Create a new did and hypercore'
     },
     async command({ didClient }){
-
       const didDocument = await didClient.create()
       const { did } = didDocument
-      console.log('created', didDocument)
       console.log(didDocument.value)
-
+      console.log(`replicating…`)
       await didClient.ready()
-
       const didDocument2 = await replicate(didDocument.did)
       console.log({ didDocument2 })
-
-      // await new Promise((x,y) => {})
-
-      // setInterval(() => {
-      //   didClient.status().then(console.log)
-      // }, 1000);
-      // await new Promise(resolve => {
-      //   setTimeout(resolve, 9999999)
-      // })
-
-      // TODO write the private keys somewhere we know where to look
-      //      so we can use them for updates
-      //              doesnt the corestore do this?
-      // TODO take a flag to force-replicate it
     }
   },
   resolve: {
@@ -179,16 +162,15 @@ function simple (cmd) {
 
 
 async function replicate(did){
-  console.log(`replicating DID="${did}"…`)
+  const url = `http://localhost:59736/${did}`
   const start = Date.now()
   while (Date.now() - start < 60000){
-    const response = await fetch(`http://localhost:59736/${did}`, {
+    const response = await fetch(url, {
       method: 'get',
       headers: {'Accept': 'application/json'}
     })
     const didDocument2 = await response.json()
-    console.log('REP RES?->', didDocument2)
     if (didDocument2 && didDocument2.did === did) return didDocument2
   }
-  console.log(`replicated DID="${did}"`)
+  console.log(`replicated at ${url}`)
 }
