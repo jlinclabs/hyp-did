@@ -12,7 +12,7 @@ console.log('starting swarm boostrap server as', keyToString(swarm.keyPair.publi
 
 swarm.on('connection', function (connection, info) {
   const id = keyToString(connection.remotePublicKey)
-  console.log('connection open:', id)
+  console.log('connection open:', id, info)
   // connection.on('open', () => {
 
   // })
@@ -21,7 +21,7 @@ swarm.on('connection', function (connection, info) {
   })
 
   connection.on('error', error => {
-    console.error('connection error:', id, error)
+    console.error('connection error:', id, `${error}`)
   })
   // Do something with `connection`
   // `info` is a PeerInfo object
@@ -78,3 +78,19 @@ discovery.flushed().then(async () => {
 //   process.exit(0)
 // })
 
+
+
+// MAFINTOSH EXAMPLE
+// https://discord.com/channels/709519409932140575/709522119335346196/900698651914018856
+// const b = HyperswarmDHT.bootstrapper(0)
+// await b.ready()
+// const bootstrap = [{ host: '127.0.0.1', port: b.address().port }]
+// const nodes = [b]
+// while (nodes.length < 5) { // 5 is arbitrary, just needs >2
+//   // in general here you'd only mess with the ephemeral flag for testing
+//   const node = new HyperswarmDHT({ bootstrap, ephemeral: false })
+//   await node.ready()
+//   nodes.push(node)
+// }
+// // you prob want to destroy the nodes array on test teardown
+// return bootstrap

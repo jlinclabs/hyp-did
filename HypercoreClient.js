@@ -28,6 +28,7 @@ export default class HypercoreClient {
       //   { host: '127.0.0.1', port: 49736 },
       // ]
     })
+    this.swarmKey = keyToString(this.swarm.keyPair.publicKey)
     // console.log('bootstrapNodes', this.swarm.dht.bootstrapNodes)
 
     // this.swarm.dht.ready().then(async () => {
@@ -44,30 +45,30 @@ export default class HypercoreClient {
 
     process.on('SIGTERM', () => { this.destroy() })
 
-    this.swarm.once('connection', () => {
-
-    })
-    this.swarm.on('connection', (socket) => {
+    this.swarm.on('connection', (conn) => {
       console.log(
         '[Hyperlinc] new peer connection from',
-        keyToString(socket.remotePublicKey)
+        keyToString(conn.remotePublicKey)
       )
+      // console.log(conn)
       // console.log(this.swarm)
-      this.corestore.replicate(socket, {
+
+      // Is this what we want?
+      this.corestore.replicate(conn, {
         keepAlive: true,
         // live?
       })
     })
 
-    console.log(`connecting to hyperlinc swarm as ${keyToString(this.swarm.keyPair.publicKey)}`)
     console.log(`joining topic: "${topic}"`)
     this.discovery = this.swarm.join(topic)
+
     console.log('flushing discovery…')
     this._ready = this.discovery.flushed().then(async () => {
       console.log('flushed!')
       console.log('connected?', this.swarm.connections.size)
       if (this.swarm.connections.size > 0) return
-      await this.swarm.flush()
+      await this.swarm.flush() // Waits for the swarm to connect to pending peers.
       // await new Promise((resolve, reject) => {
       //   this.swarm.once('connection', () => { resolve() })
       //   setTimeout(() => { reject(new Error(`timeout waiting for peers`)) }, 6000)
@@ -88,8 +89,20 @@ export default class HypercoreClient {
     console.log('[Hyperlinc] destroying!')
     if (this.swarm){
       console.log('[Hyperlinc] disconnecting from swarm')
+      console.log('[Hyperlinc] connections.size', this.swarm.connections.size)
+      console.log('[Hyperlinc] swarm.flush()')
+      await this.swarm.flush()
+      console.log('[Hyperlinc] flushed!')
+      console.log('[Hyperlinc] connections.size', this.swarm.connections.size)
       // await this.swarm.clear()
+      console.log('[Hyperlinc] swarm.destroy()')
       await this.swarm.destroy()
+      console.log('[Hyperlinc] swarm destroyed. disconnected?')
+      console.log('[Hyperlinc] connections.size', this.swarm.connections.size)
+      for (const conn of this.swarm.connections){
+        console.log('disconnecting dangling connection')
+        conn.destroy()
+      }
     }
   }
 
