@@ -36,12 +36,12 @@ export default class DidClient extends HypercoreClient {
     if (await didDocument.exists()) return didDocument
   }
 
-  async create(){
+  async create({ didKeyPair, signingKeyPair, encryptingKeyPair }){
     // await this.ready()
     // const didSigningKeyPair = createKeyPair() // when do we do this if its doable on another machine?
-    const hypercoreKeyPair = createSigningKeyPair()
-    const did = keyToDid(hypercoreKeyPair.publicKey)
-    const core = await this._getCore(hypercoreKeyPair.publicKey, hypercoreKeyPair.secretKey)
+    // const hypercoreKeyPair = createSigningKeyPair()
+    const did = keyToDid(didKeyPair.publicKey)
+    const core = await this._getCore(didKeyPair.publicKey, didKeyPair.secretKey)
     const didDocument = new DidDocument(did, core)
     await didDocument.create()
     return didDocument

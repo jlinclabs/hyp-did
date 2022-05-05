@@ -27,14 +27,26 @@ export const commands = {
       full: 'Create a new did and hypercore'
     },
     async command({ keychain, didClient }){
+      // these could be set to existing keys using flags
       const signingKeyPair = await keychain.createSigningKeyPair()
-      console.log(signingKeyPair)
       const encryptingKeyPair = await keychain.createEncryptingKeyPair()
-      console.log(encryptingKeyPair)
-      // const identity = await keychain.create()
-      // const didDocument = await didClient.create()
-      // const { did } = didDocument
-      // console.log(didDocument.value)
+
+      // here is where we could store keys locally OR use a remote did server
+      // maybe we use different didClient classes for local vs remote?
+      //    we need a local keychain either way
+      const didDocument = didClient.create({ signingKeyPair, encryptingKeyPair })
+      console.log(didDocument.value)
+
+      // create a new did keyPair
+      const didKeyPair = await keychain.createSigningKeyPair()
+      console.log({ didKeyPair, signingKeyPair, encryptingKeyPair })
+      const didDocument = await didClient.create({
+        didKeyPair,
+        signingKeyPair,
+        encryptingKeyPair,
+      })
+      const { did } = didDocument
+      console.log(didDocument.value)
       // if (HOSTS.length === 0) return
       // console.log(`replicating…`)
       // await didClient.ready()
@@ -157,6 +169,20 @@ function wrapCommand(cmd){
     if (args.verbose){
       console.error(`${chalk.gray(`storing hypercores in ${storagePath}`)}`)
     }
+
+    // it would be nice if we could know about local and remove dids
+    // if we have a local did store that stores dids in a way that allows
+    // us to know metadata about the did. like which did server holds its
+    // core's private keys
+
+    args.dids = new DidStore({
+      storagePath: Path.join(storagePath, 'dids'),
+    })
+
+    // // here is where we alternately use a remote did server
+    // args.dids = new RemoteDidStore({
+    //   storagePath: Path.join(storagePath, 'dids'),
+    // })
 
     args.didClient = new DidClient({
       storagePath: Path.join(storagePath, 'dids'),
