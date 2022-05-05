@@ -16,7 +16,7 @@ export default class Keychain {
     return this.constructor.name + '(\n' +
       indent + '  storagePath: ' + opts.stylize(this.storagePath, 'string') + '\n' +
       indent + '  size: ' + opts.stylize(this.size, 'number') + '\n' +
-      indent + '  open: ' + opts.stylize(!!this._opening.open, 'boolean') + '\n' +
+      // indent + '  open: ' + opts.stylize(!!this._opening.open, 'boolean') + '\n' +
       indent + ')'
   }
 

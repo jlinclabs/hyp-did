@@ -10,8 +10,8 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import chalk from 'chalk'
 import fetch from 'node-fetch'
-import DidClient from 'hyp-did/DidClient.js'
-import IdentitiesStore from 'hyp-did/IdentitiesStore.js'
+import DidClient from 'hyp-did-core/DidClient.js'
+import Keychain from 'hyp-did-core/Keychain.js'
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(fileURLToPath(import.meta.url), '../../package.json'), 'utf8'))
 
@@ -26,8 +26,8 @@ export const commands = {
       simple: 'Create a new did',
       full: 'Create a new did and hypercore'
     },
-    async command({ identitiesStore, didClient }){
-      const identity = await identitiesStore.create()
+    async command({ keychain, didClient }){
+      const identity = await keychain.create()
       const didDocument = await didClient.create()
       const { did } = didDocument
       console.log(didDocument.value)
@@ -45,10 +45,10 @@ export const commands = {
       simple: 'list all dids',
       full: 'list all locally cached dids'
     },
-    async command({ identitiesStore, didClient }){
-      console.log(identitiesStore)
-      await identitiesStore.open() // .ready()?
-      console.log(identitiesStore)
+    async command({ keychain, didClient }){
+      console.log(keychain)
+      await keychain.open() // .ready()?
+      console.log(keychain)
 
       // TODO we need to start storing DIDs in in the .hyp-did dir too
       // and read a file of dids
@@ -83,14 +83,14 @@ export const commands = {
     }
   },
   supersede: {
-    name: 'superseed',
-    description: 'superseed',
+    name: 'supersede',
+    description: 'supersede',
     usage: {
-      simple: 'superseed',
-      full: 'superseed',
+      simple: 'supersede',
+      full: 'supersede',
     },
     async command(args){
-      console.log('superseed', args)
+      console.log('supersede', args)
     }
   },
   revoke: {
@@ -142,9 +142,8 @@ function wrapCommand(cmd){
       storagePath: Path.join(storagePath, 'dids'),
     })
 
-    args.identitiesStore = new IdentitiesStore({
-      storagePath: Path.join(storagePath, 'identities'),
-      didClient: args.didClient, // ???
+    args.keychain = new Keychain({
+      storagePath: Path.join(storagePath, 'keys'),
     })
     try{
       await command(args)
@@ -187,7 +186,7 @@ function usage(cmd){
 
   ${simple(commands.create)}
   ${simple(commands.resolve)}
-  ${simple(commands.superseed)}
+  ${simple(commands.supersede)}
   ${simple(commands.revoke)}
   ${simple(commands.history)}
 

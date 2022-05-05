@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/jlinclabs/hyp-did#readme",
   "dependencies": {
-
+    "hyp-did-core": "file:core"
   }
 }
