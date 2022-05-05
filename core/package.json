@@ -22,6 +22,12 @@
   },
   "homepage": "https://github.com/jlinclabs/hyp-did#readme",
   "dependencies": {
-
+    "@jlinc/jwt": "^1.0.3",
+    "autobase": "^1.0.0-alpha.8",
+    "blessed": "^0.1.81",
+    "corestore": "^6.0.1-alpha.9",
+    "hyperswarm": "github:hyperswarm/hyperswarm#v3.0.4",
+    "require-all": "^3.0.0",
+    "urlsafe-base64": "^1.0.0"
   }
 }
