@@ -5,7 +5,7 @@ import dht from '@hyperswarm/dht'
 import { keyToString, keyToBuffer, keyToDid } from './util.js'
 import topic from './topic.js'
 
-export default class HypercoreClient {/
+export default class HypercoreClient {
   constructor(options = {}){
     const { storagePath } = options
     this.storagePath = storagePath

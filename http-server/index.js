@@ -57,7 +57,7 @@ export default function createHypDidHttpServer(opts){
   app.set('view engine', 'hbs')
   app.set('views', __dirname + '/views')
 
-  function renderError(res, error, statusCode = 401){
+  function renderError(req, res, error, statusCode = 401){
     console.error(error)
     res.status(statusCode)
     if (req.accepts('html')) return res.render('error', { error })
@@ -80,11 +80,11 @@ export default function createHypDidHttpServer(opts){
 
   app.routes.get(/^\/(did:.+)$/, async (req, res, next) => {
     const did = req.params[0]
-    if (!isValidDID(did)) return renderError(res, `invalid did DID=${did}`, 400)
+    if (!isValidDID(did)) return renderError(req, res, `invalid did DID=${did}`, 400)
     console.log('resolving', did)
     await app.didClient.ready()
     const didDocument = await app.didClient.get(did)
-    if (!didDocument) return renderError(res, `unable to resolve DID=${did}`, 404)
+    if (!didDocument) return renderError(req, res, `unable to resolve DID=${did}`, 404)
     console.log('updating', did)
     if (!didDocument.loaded) await didDocument.update()
     console.log('resolved', didDocument.value)
