@@ -69,8 +69,6 @@ export const commands = {
     },
     async command({ keychain, didClient }){
       console.log(keychain)
-      await keychain.open() // .ready()?
-      console.log(keychain)
 
       // TODO we need to start storing DIDs in in the .hyp-did dir too
       // and read a file of dids

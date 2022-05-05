@@ -68,11 +68,6 @@ export default class Keychain {
     const keyPair = SigningKeyPair.create()
     await this.writeKeyPair(keyPair)
     return keyPair
-    // const path = this.path(keyPair.publicKey)
-    // await mkdir(this.storagePath).catch(safetyCatch)
-    // await writeFile(path, keyPair.secretKey)
-    // // const vaild = b4a.equals(await readFile(path), keyPair.secretKey)
-    // return keyToString(keyPair.publicKey)
   }
 
   async createEncryptingKeyPair(){
@@ -80,11 +75,6 @@ export default class Keychain {
     await this.writeKeyPair(keyPair)
     return keyPair
   }
-
-  // async has(publicKey){
-  //   const path = this.path(publicKey)
-  //   // return b4a.equals(await readFile(path), keyPair.secretKey)
-  // }
 
   async all(){
     try{
@@ -103,7 +93,6 @@ export default class Keychain {
       throw error
     }
   }
-
 }
 
 class KeyPair {
@@ -113,17 +102,10 @@ class KeyPair {
     this.valid = this.validate(secretKey)
   }
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
-    let indent = ''
-    if (typeof opts.indentationLvl === 'number')
-      while (indent.length < opts.indentationLvl) indent += ' '
-    return (
-      this.constructor.name + '(' +
+    return this.constructor.name + '(' +
       opts.stylize(keyToString(this.publicKey), 'string') +
       (this.valid ? '' : ' ' + opts.stylize('invalid', 'boolean')) +
-      ')'
-    )
-      // indent + '  valid: ' + opts.stylize(this.valid, 'boolean') + '\n' +
-      // indent + ')'
+    ')'
   }
 }
 
@@ -131,6 +113,9 @@ class SigningKeyPair extends KeyPair {
   static create(){
     return new SigningKeyPair(createSigningKeyPair())
   }
+
+  get type(){ return 'signing' }
+
   validate(secretKey){
     const { publicKey } = this
     return validateSigningKeyPair({ publicKey, secretKey })
@@ -147,6 +132,9 @@ class EncryptingKeyPair extends KeyPair {
   static create(){
     return new EncryptingKeyPair(createEncryptingKeyPair())
   }
+
+  get type(){ return 'encrypting' }
+
   validate(secretKey){
     const { publicKey } = this
     return validateEncryptingKeyPair({ publicKey, secretKey })
