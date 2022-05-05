@@ -7,6 +7,7 @@ import topic from './topic.js'
 
 const swarm = new Hyperswarm({
   // port ????
+  debug: true,
 })
 console.log('starting swarm boostrap server as', keyToString(swarm.keyPair.publicKey))
 

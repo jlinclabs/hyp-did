@@ -53,7 +53,7 @@ export const commands = {
       if (replicate) await didDocument.replicate()
     }
   },
-  superseed: {
+  supersede: {
     name: 'superseed',
     description: 'superseed',
     usage: {
