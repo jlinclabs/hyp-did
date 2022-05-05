@@ -27,15 +27,37 @@ export const commands = {
       full: 'Create a new did and hypercore'
     },
     async command({ keychain, didClient }){
-      const identity = await keychain.create()
-      const didDocument = await didClient.create()
-      const { did } = didDocument
-      console.log(didDocument.value)
-      if (HOSTS.length === 0) return
-      console.log(`replicating…`)
-      await didClient.ready()
-      console.log({ HOSTS })
-      await Promise.all(HOSTS.map(host => replicate(host, didDocument.did)))
+      const signingKeyPair = await keychain.createSigningKeyPair()
+      console.log(signingKeyPair)
+      const encryptingKeyPair = await keychain.createEncryptingKeyPair()
+      console.log(encryptingKeyPair)
+      // const identity = await keychain.create()
+      // const didDocument = await didClient.create()
+      // const { did } = didDocument
+      // console.log(didDocument.value)
+      // if (HOSTS.length === 0) return
+      // console.log(`replicating…`)
+      // await didClient.ready()
+      // console.log({ HOSTS })
+      // await Promise.all(HOSTS.map(host => replicate(host, didDocument.did)))
+    }
+  },
+  keys: {
+    name: 'keys',
+    description: 'list all keys',
+    usage: {
+      simple: 'list all keys',
+      full: 'list all locally cached keys'
+    },
+    async command({ keychain }){
+      console.log(keychain)
+      const keys = await keychain.all()
+      if (keys.length === 0){
+        console.log(`you do not have any keys stored in ${keychain.storagePath}`)
+      }else {
+        console.log(`you have ${keys.length} keys stored in ${keychain.storagePath}`)
+        for (const key of keys) console.log(key)
+      }
     }
   },
   list: {

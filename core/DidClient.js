@@ -1,5 +1,5 @@
 import HypercoreClient from './HypercoreClient.js'
-import { createKeyPair, keyToBuffer, keyToDid, didToKey } from './util.js'
+import { createSigningKeyPair, keyToBuffer, keyToDid, didToKey } from './util.js'
 import DidDocument from './DidDocument.js'
 
 export default class DidClient extends HypercoreClient {
@@ -39,9 +39,9 @@ export default class DidClient extends HypercoreClient {
   async create(){
     // await this.ready()
     // const didSigningKeyPair = createKeyPair() // when do we do this if its doable on another machine?
-    const hypercoreKeypair = createKeyPair()
-    const did = keyToDid(hypercoreKeypair.publicKey)
-    const core = await this._getCore(hypercoreKeypair.publicKey, hypercoreKeypair.secretKey)
+    const hypercoreKeyPair = createSigningKeyPair()
+    const did = keyToDid(hypercoreKeyPair.publicKey)
+    const core = await this._getCore(hypercoreKeyPair.publicKey, hypercoreKeyPair.secretKey)
     const didDocument = new DidDocument(did, core)
     await didDocument.create()
     return didDocument
@@ -49,4 +49,3 @@ export default class DidClient extends HypercoreClient {
 
 }
 
-export { createKeyPair }
