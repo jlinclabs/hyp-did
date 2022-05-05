@@ -72,6 +72,7 @@ export default function createHypDidHttpServer(opts){
   app.routes.get('/', async (req, res, next) => {
     const { did } = req.query
     if (did && did.startsWith('did:')) return res.redirect(`/${did}`)
+
     if (req.accepts('html')) return res.render('index', {
       hyperswarmStatus: JSON.stringify(await app.didClient.status(), null, 2),
     })
@@ -88,9 +89,10 @@ export default function createHypDidHttpServer(opts){
     console.log('updating', did)
     if (!didDocument.loaded) await didDocument.update()
     console.log('resolved', didDocument.value)
-    if (req.accepts('html')) return res.render('did', {
-      did, json: JSON.stringify(didDocument.value, null, 2)
-    })
+    if (req.accepts('html'))
+      return res.render('did', {
+        did, json: JSON.stringify(didDocument.value, null, 2)
+      })
     return res.json(didDocument.value)
   })
 

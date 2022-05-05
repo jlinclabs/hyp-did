@@ -19,3 +19,5 @@ export const keyToDid = key =>
 
 export const didToKey = did =>
   DID_HYP_REGEXP.test(did) && RegExp.$1
+
+export { keyPair as createKeyPair } from 'hypercore-crypto'

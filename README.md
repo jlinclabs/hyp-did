@@ -7,11 +7,34 @@ using the
 [SPEC](./SPEC.md)
 
 
+## Keychain
+
+stores your keypairs. depending on the system it picks different storage strategies
+
+## DidClient
+
+- manages connection to hyperswarm
+- did read from core
+- be available to server cores for replication
+
+
+1. you ask the did server to host a did for you
+2. it gives you back a did (and a secret)
+3. you create a did document locally storing 
+4. post it back to the server as a JWT signed with the exact signing key thats in the did document, and include the secret as a param
+4. the did server writes the initial did document to the core
+5. 
+
 ## Usage
 
 ```js
-import { DidClient } from 'hyp-did'
-const DIDS = new DidClient()
+import { DidClient, Keychain } from 'hyp-did'
+const keys = new Keychain({ })
+keys.gener
+const DIDS = new DidClient({ keychain })
+
+await DIDS.mine()
+
 const didDocument = await DIDS.get(`did:hyp:XFNojZsnJckWK1ks1MmrIJ3Pa9viXV85uVSftjS6WAA`)
 didDocument === {
   "@context": 'https://w3id.org/did/v1',

@@ -1,3 +1,4 @@
+import Path from 'path'
 import Corestore from 'corestore'
 import Hyperswarm from 'hyperswarm'
 import crypto from 'hypercore-crypto'
@@ -9,14 +10,14 @@ export default class HypercoreClient {
   constructor(options = {}){
     const { storagePath } = options
     this.storagePath = storagePath
+    this.seed = dht.hash(Buffer.from(this.storagePath)) // TODO add more uniqueness here
     this.corestore = new Corestore(this.storagePath)
   }
 
   async connect(){
     if (this._ready) return
-    const seed = dht.hash(Buffer.from(this.storagePath)) // TODO add more uniqueness here
     this.swarm = new Hyperswarm({
-      seed,
+      seed: this.seed,
       // bootstrap: [
       //   { host: '127.0.0.1', port: 49736 },
       // ]

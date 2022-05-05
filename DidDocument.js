@@ -1,4 +1,5 @@
 
+
 import { keyToString, didToKey } from './util.js'
 
 export default class DidDocument {
@@ -12,7 +13,7 @@ export default class DidDocument {
 
   get published(){ return false /* TBD */}
 
-  get exists(){ return false /* TBD */}
+  // get exists(){ return false /* TBD */}
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
     let indent = ''
@@ -35,7 +36,10 @@ export default class DidDocument {
     this.loaded = true
     if (this.core.length > 0){
       const json = await this.core.get(this.core.length - 1)
-      this._value = {...JSON.parse(json), did: this.did}
+      this._value = {
+        ...JSON.parse(json),
+        did: this.did, // <--- remove this and use didDocument.id
+      }
     }
   }
 
@@ -50,7 +54,17 @@ export default class DidDocument {
   }
 
   async create(){
-    await this._append({
+    // maybe check that the core is empty first? validations?
+
+
+    // TODO
+    // each entry in the hypercore is a JWT
+    // JWT is signed by did signing keys
+    // we need a layer between here and where the other different did keys are
+
+
+
+    const payload = JSON.stringify({
       "@context": "https://w3id.org/did/v1",
       id: this.did,
       created: new Date,
@@ -60,9 +74,14 @@ export default class DidDocument {
           type: 'ed25519', // ???
           owner: this.did,
           publicKeyBase64: this.publicKey,
+          // TODO seperate did-signing and did-encrypting
         },
       ]
     })
+    const signature = sign(payload, this.signingKey)
+    const jwt = '??'
+
+    await this._append(jwt)
 
     await this.update()
     // write to it

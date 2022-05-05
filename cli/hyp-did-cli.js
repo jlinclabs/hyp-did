@@ -10,7 +10,8 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import chalk from 'chalk'
 import fetch from 'node-fetch'
-import { DidClient } from 'hyp-did'
+import DidClient from 'hyp-did/DidClient.js'
+import IdentitiesStore from 'hyp-did/IdentitiesStore.js'
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(fileURLToPath(import.meta.url), '../../package.json'), 'utf8'))
 
@@ -25,7 +26,8 @@ export const commands = {
       simple: 'Create a new did',
       full: 'Create a new did and hypercore'
     },
-    async command({ didClient }){
+    async command({ identitiesStore, didClient }){
+      const identity = await identitiesStore.create()
       const didDocument = await didClient.create()
       const { did } = didDocument
       console.log(didDocument.value)
@@ -34,6 +36,33 @@ export const commands = {
       await didClient.ready()
       console.log({ HOSTS })
       await Promise.all(HOSTS.map(host => replicate(host, didDocument.did)))
+    }
+  },
+  list: {
+    name: 'list',
+    description: 'list all dids',
+    usage: {
+      simple: 'list all dids',
+      full: 'list all locally cached dids'
+    },
+    async command({ identitiesStore, didClient }){
+      console.log(identitiesStore)
+      await identitiesStore.open() // .ready()?
+      console.log(identitiesStore)
+
+      // TODO we need to start storing DIDs in in the .hyp-did dir too
+      // and read a file of dids
+
+      // ~/.jlinx/identites
+      // // await didClient.ready()
+
+
+      // console.log(didClient.corestore)
+      // await didClient.corestore.ready()
+      // const keys = [...didClient.corestore.cores.keys()]
+      // console.log('size', didClient.corestore.cores.size)
+      // console.log('keys', keys)
+      // console.log(...keys)
     }
   },
   resolve: {
@@ -102,15 +131,21 @@ function wrapCommand(cmd){
       process.exit(0)
     }
 
-    let storagePath = Path.join(operatingSystem.homedir(), '.hyp-did', 'storage')
+    const storagePath = Path.join(operatingSystem.homedir(), '.hyp-did')
+    // TODO ensure ~/.hyp-did permissions
+
     if (args.verbose){
       console.error(`${chalk.gray(`storing hypercores in ${storagePath}`)}`)
     }
 
     args.didClient = new DidClient({
-      storagePath
+      storagePath: Path.join(storagePath, 'dids'),
     })
 
+    args.identitiesStore = new IdentitiesStore({
+      storagePath: Path.join(storagePath, 'identities'),
+      didClient: args.didClient, // ???
+    })
     try{
       await command(args)
     }catch(error){
