@@ -15,15 +15,19 @@ stores your keypairs. depending on the system it picks different storage strateg
 
 - manages connection to hyperswarm
 - did read from core
-- be available to server cores for replication
+- replicate did documents across swarm
+
+
+## Apps that cannot hyperswarm directly
 
 
 1. you ask the did server to host a did for you
 2. it gives you back a did (and a secret)
 3. you create a did document locally storing 
 4. post it back to the server as a JWT signed with the exact signing key thats in the did document, and include the secret as a param
+5. the did server checks the secret, verifies the jwt and writes the initial document as json to the core
 4. the did server writes the initial did document to the core
-5. 
+
 
 ## Usage
 
