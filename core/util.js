@@ -3,16 +3,16 @@ import b64 from 'urlsafe-base64'
 import b4a from 'b4a'
 import sodium from 'sodium-universal'
 
-const PREFIX = 'did:hyp:'
+const PREFIX = 'did:jlinx:'
 const LENGTH = PREFIX.length + 43
 
-export const DID_HYP_REGEXP = /^did:hyp:([A-Za-z0-9\-_]{43})$/
+export const DID_JLINX_REGEXP = /^did:jlinx:([A-Za-z0-9\-_]{43})$/
 
 export const isPublicKey = publicKey =>
   keyToString(publicKey).match(/^[A-Za-z0-9\-_]{43}$/)
 
-export const isValidDID = did =>
-  DID_HYP_REGEXP.test(did)
+export const isJlinxDid = did =>
+  DID_JLINX_REGEXP.test(did)
 
 export const keyToString = key =>
   typeof key === 'string' ? key : b64.encode(key)
@@ -24,7 +24,7 @@ export const keyToDid = key =>
   `${PREFIX}${keyToString(key)}`
 
 export const didToKey = did =>
-  DID_HYP_REGEXP.test(did) && RegExp.$1
+  DID_JLINX_REGEXP.test(did) && RegExp.$1
 
 export function createSigningKeyPair(seed){
   const publicKey = b4a.allocUnsafe(sodium.crypto_sign_PUBLICKEYBYTES)

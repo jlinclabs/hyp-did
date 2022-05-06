@@ -3,7 +3,6 @@
 import { program } from 'commander'
 import JlinxClient from 'jlinx-core/JlinxClient.js'
 
-
 program
   .option('-s --storage <path>', 'path to the jlinx directory', JlinxClient.defaultStoragePath)
 
@@ -11,6 +10,7 @@ async function beforeEach(opts){
   const jlinx = new JlinxClient({
     storagePath: program.opts().storage,
   })
+  await jlinx.ready()
   return { jlinx }
 }
 
@@ -36,7 +36,7 @@ async function list(opts){
   const { jlinx } = await beforeEach(opts)
   const keys = await jlinx.keystore.all()
   for (const keyPair of keys)
-    console.log(`${keyPair.publicKeyAsString} (${keyPair.type})`)
+    console.log(`${keyPair.id} (${keyPair.type})`)
 }
 
 async function create(opts){

@@ -1,29 +1,24 @@
 #!/usr/bin/env node
 
-import Path from 'path'
-import os from 'os'
 import { program } from 'commander'
 import JlinxClient from 'jlinx-core/JlinxClient.js'
 
-const DEFAULT_CONFIG_PATH = Path.join(os.homedir(), '.jlinx')
-
 program
-  .option('-c --config <path>', 'the jlinx config directory to use', DEFAULT_CONFIG_PATH)
+  .option('-s --storage <path>', 'path to the jlinx directory', JlinxClient.defaultStoragePath)
 
-let jlinx
-program.hook('preAction', async (thisCommand, actionCommand) => {
-  const opts = program.opts()
-  console.log('setup', opts)
-  jlinx = new JlinxClient({
-    storagePath: opts.config,
+async function beforeEach(opts){
+  const jlinx = new JlinxClient({
+    storagePath: program.opts().storage,
   })
   await jlinx.ready()
+  return { jlinx }
+}
+
+program.action(async (opts) => {
+  const { jlinx } = await beforeEach(opts)
+  console.log('dids!', opts)
 })
 
-// default
-program.action((...args) => {
-  console.log('[list all dids here]')
-})
 
 program
   .command('resolve')
@@ -45,14 +40,19 @@ program
 
 program.parseAsync(process.argv)
 
-async function resolve({ did }){
-  console.log('resolving did', did)
-  const didDocument = await jlinx.resolveDid(did)
+
+async function resolve(opts){
+  const { jlinx } = await beforeEach(opts)
+  console.log('resolving did', opts.did)
+  const didDocument = await jlinx.resolveDid(opts.did)
   console.log(didDocument)
 }
 
-async function list(){
-  console.log('DIDS:\n')
+async function list(opts){
+  const { jlinx } = await beforeEach(opts)
+  console.log('listing all our dids')
+  const dids = await jlinx.didstore.all()
+  console.log(dids)
 }
 
 async function create(){

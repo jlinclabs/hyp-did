@@ -4,6 +4,8 @@ import safetyCatch from 'safety-catch'
 import b64 from 'urlsafe-base64'
 import b4a from 'b4a'
 
+import Filestore from './Filestore.js'
+
 import {
   isPublicKey,
   keyToBuffer,
@@ -21,30 +23,12 @@ import {
  * apple's keychain
  */
 
-export default class Keystore {
-  constructor(storagePath){
-    this.storagePath = storagePath
-  }
+export default class Keystore extends Filestore {
 
-  [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
-    let indent = ''
-    if (typeof opts.indentationLvl === 'number')
-      while (indent.length < opts.indentationLvl) indent += ' '
-    return this.constructor.name + '(\n' +
-      indent + '  storagePath: ' + opts.stylize(this.storagePath, 'string') + '\n' +
-      // indent + '  size: ' + opts.stylize(this.size, 'number') + '\n' +
-      // indent + '  open: ' + opts.stylize(!!this._opening.open, 'boolean') + '\n' +
-      indent + ')'
-  }
-
-  path(publicKey){
-    return Path.join(this.storagePath, keyToString(publicKey))
-  }
+  _matchFilename(filename){ return isPublicKey(filename) }
 
   async get(publicKey){
-    const path = this.path(publicKey)
-    const secretKey = await readFile(path) // handle missing dir error here
-    publicKey = keyToBuffer(publicKey)
+    const secretKey = await this._get(publicKey)
     const keypair = (
       secretKey.length === 32
         ? new EncryptingKeyPair({ publicKey, secretKey }) :
@@ -52,16 +36,21 @@ export default class Keystore {
         ? new SigningKeyPair({ publicKey, secretKey }) :
       undefined
     )
-    // console.log(keyToString(publicKey), {keypair})
     if (keypair && keypair.valid) return keypair
   }
 
-  async write(keyPair){
-    const path = this.path(keyPair.publicKey)
-    await mkdir(this.storagePath).catch(safetyCatch)
-    // TODO validateSigningKeyPair || validateEncryptingKeyPair
-    await writeFile(path, keyPair.secretKey)
-    if (!b4a.equals(await readFile(path), keyPair.secretKey))
+  async set(keyPair){
+    // TODO validate keypair
+    // TODO prevent overwriting
+    const publicKey = keyToString(keyPair.publicKey)
+    await this._set(publicKey, keyPair.secretKey)
+    const keyPair2 = await this.get(publicKey)
+
+    // const path = this.path(keyPair.publicKey)
+    // await mkdir(this.storagePath).catch(safetyCatch)
+    // // TODO validateSigningKeyPair || validateEncryptingKeyPair
+    // await writeFile(path, keyPair.secretKey)
+    if (!b4a.equals(await this._get(publicKey), keyPair.secretKey))
       throw new Error('failed to write key')
   }
 
@@ -98,14 +87,16 @@ export default class Keystore {
 
 class KeyPair {
   constructor({ publicKey, secretKey }){
-    this.publicKey = publicKey
-    this.secretKey = secretKey
+    this.publicKey = keyToBuffer(publicKey)
+    this.secretKey = keyToBuffer(secretKey)
+    this.id = keyToString(publicKey)
     this.valid = this.validate(secretKey)
   }
-  get publicKeyAsString(){ return keyToString(this.publicKey) }
+  // get publicKeyAsString(){ return keyToString(this.publicKey) }
+
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
     return this.constructor.name + '(' +
-      opts.stylize(this.publicKeyAsString, 'string') +
+      opts.stylize(this.id, 'string') +
       (this.valid ? '' : ' ' + opts.stylize('invalid', 'boolean')) +
     ')'
   }
