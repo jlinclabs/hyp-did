@@ -34,6 +34,7 @@ program
 program
   .command('create')
   // .argument('<did>', 'the did to')
+  .option('-H, --host <host>', 'the server to host the did', 'localhost')
   .option('-k --keys <keys>', 'a comma separated list of keys to include in the did document')
   .action(create)
 

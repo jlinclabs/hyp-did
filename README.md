@@ -7,39 +7,73 @@ using the
 [SPEC](./SPEC.md)
 
 
-## KeyPairStore
+## JlinxClient
 
-stores your keypairs. depending on the system it picks different storage strategies
+- has a keyStore
+- has a didStore
+  - depending on the did actions are either sent to a local or remote did server
+
+## ServerClient
+
+(move all hypercore stuff here)
+
+- has a keyStore
+- has a didStore
+- has a coreStore
+- manages connection to hyperswarm
+- replicates did documents across swarm
+
+### Actions
+
+- resolve(did)
+- create()
+- amend(did, signedJwtOfNewDidDocument)
+
+```js
+// REST API
+get(`${host}/${did})              // resolve
+post(`${host}/${did}`, signedJWT) // amend
+post(`${host}/new`)               // create
+```
+
+
+```
+CLI -> JlinxClient 
+        L-> JlinxServer(localhost)
+        L-> JlinxServer(jlix.io)
+JlinxServer -> hyperswarm
+```
+
+## KeyStore
+
+- stores your keypairs. 
+- depending on the system it picks different storage strategies
 
 ## DidStore
 
-- manages connection to hyperswarm
+- has a keystore
 - did read from core
-- replicate did documents across swarm
 - stores a list of dids you track on disk
 - needs a KeyPairStore to store didKeyPairs
   - this is the same KeyPairStore on devices that can hypercore
 
-## HypercoreClient
-
-- used by DidStore to replicate dids across the jlinx hyperswarm
-- has a corestore and caches hypercores on disk
-- 
-
-
 
 ## apps
 
-### Did Http Server
+### DID Host (DID Server)
+
+an http server that responds to the DID Rest API
+
 ### Did CLI
 
-The CLI can do both of our two 
+the CLI uses 
+- JlinxClient
+- JlinxServer
 
 ### Did Desktop / Mobile
 
 
 ## Apps that cannot hyperswarm directly
-
 
 1. you ask the did server to host a did for you
 2. it gives you back a did (and a secret)

@@ -26,6 +26,17 @@ import DidDocument from './DidDocument.js'
   if we want each did to point to an authoritative server
   then we cant support the case where a desktop app
   anonymously joins a swarm to sync their did. or can we?
+
+
+
+
+  what if we make a local service that we spawn or can be darmonized
+  that mirrors the remote http did server
+  and this class never sees a keystore it only talks to a "remove"
+  did server, and we just start one locally
+
+  the cli could later manage a daemon that persists your cores
+  full time
 */
 
 export default class Didstore extends Filestore {

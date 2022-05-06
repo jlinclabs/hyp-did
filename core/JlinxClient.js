@@ -35,12 +35,19 @@ export default class JlinxClient {
     this.keystore = new Keystore({
       storagePath: path('keys')
     })
+
+    // this needs to be a generaic client object that always
+    // talks to a did http server either running remotely or locally
+
+
     // didstore can either be Didstore or RemoteDidStore
     this.didstore = new Didstore({
       storagePath: this.storagePath,
       keystore: this.keystore,
       // corestore: new Corestore(path('cores')),
     })
+
+
     // // TODO add support for RemoteDidStore
     // this.didstore = new RemoteDidstore({
     //   host: 'https://dids.jlinc.io',
