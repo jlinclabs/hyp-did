@@ -1,5 +1,7 @@
 import Path from 'path'
 import Corestore from 'corestore'
+import Debug from 'debug'
+const debug = Debug('jlinx:didstore')
 
 import Filestore from './Filestore.js'
 import {
@@ -31,6 +33,7 @@ export default class Didstore extends Filestore {
     const publicKey = didToKey(did)
     const core = await this._getCore(did)
     const didDocument = new DidDocument({ did, core })
+    debug('GET', did, didDocument)
     return didDocument
   }
 
@@ -39,10 +42,12 @@ export default class Didstore extends Filestore {
   }
 
   async create(){
+    debug('creating new did')
     // in the remove client this would be an HTTP post
     const keyPair = await this.keystore.createSigningKeyPair()
     const did = keyToDid(keyPair.publicKey)
     await this.set(did)
+    debug('create new did', did)
     return await this.get(did)
   }
 

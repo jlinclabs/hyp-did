@@ -2,6 +2,9 @@ import Path from 'path'
 import os from 'os'
 import ini from 'ini'
 import fs from 'fs/promises'
+
+import Debug from 'debug'
+const debug = Debug('jlinx:client')
 import Didstore from './Didstore.js'
 import Keystore from './Keystore.js'
 import DidDocument from './DidDocument.js'
@@ -58,7 +61,7 @@ export default class JlinxClient {
 
   ready(){
     if (!this._ready) this._ready = (async () => {
-      console.log('looking at', this.storagePath)
+      debug(`config: ${this.storagePath}`)
       if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
       try{
         this.config = await readConfig(this.configPath)
@@ -92,17 +95,17 @@ export default class JlinxClient {
 }
 
 async function readConfig(path){
-  console.log('reading config at', path)
+  debug('reading config at', path)
   const source = await fs.readFile(path, 'utf-8')
   return ini.parse(source)
 }
 
 async function initConfig(path){
-  console.log('initializing config at', path)
+  debug('initializing config at', path)
   const config = {
     uuid: keyToString(createSigningKeyPair().publicKey),
   }
-  console.log('writing config', config)
+  debug('writing config', config)
   await fs.writeFile(path, ini.stringify(config))
   return config
 }

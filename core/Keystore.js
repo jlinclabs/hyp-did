@@ -3,6 +3,8 @@ import { mkdir, chown, readdir, readFile, writeFile } from 'fs/promises'
 import safetyCatch from 'safety-catch'
 import b64 from 'urlsafe-base64'
 import b4a from 'b4a'
+import Debug from 'debug'
+const debug = Debug('jlinx:keystore')
 
 import Filestore from './Filestore.js'
 
@@ -52,12 +54,14 @@ export default class Keystore extends Filestore {
   async createSigningKeyPair(){
     const keyPair = SigningKeyPair.create()
     await this.set(keyPair)
+    debug('created new key pair', keyPair)
     return keyPair
   }
 
   async createEncryptingKeyPair(){
     const keyPair = EncryptingKeyPair.create()
     await this.set(keyPair)
+    debug('created new key pair', keyPair)
     return keyPair
   }
 }
