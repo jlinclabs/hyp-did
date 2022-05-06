@@ -2,7 +2,6 @@ import Path from 'path'
 import os from 'os'
 import ini from 'ini'
 import fs from 'fs/promises'
-import Corestore from 'corestore'
 import Didstore from './Didstore.js'
 import Keystore from './Keystore.js'
 import DidDocument from './DidDocument.js'
@@ -25,19 +24,19 @@ export default class JlinxClient {
 
   constructor(opts){
     const path = (...parts) => Path.join(this.storagePath, ...parts)
+
     this.storagePath = opts.storagePath || JlinxClient.defaultStoragePath
     this.configPath = path('config.ini')
     // this.storagePath is required
     // this.server = opts.servers // get from config
-    this.corestore = new Corestore(path('cores'))
     this.keystore = new Keystore({
       storagePath: path('keys')
     })
     // didstore can either be Didstore or RemoteDidStore
     this.didstore = new Didstore({
-      storagePath: path('dids'),
+      storagePath: this.storagePath,
       keystore: this.keystore,
-      corestore: this.corestore,
+      // corestore: new Corestore(path('cores')),
     })
     // // TODO add support for RemoteDidStore
     // this.didstore = new RemoteDidstore({
@@ -61,16 +60,14 @@ export default class JlinxClient {
     if (!this._ready) this._ready = (async () => {
       console.log('looking at', this.storagePath)
       if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
-      try{ this.config = await readConfig(this.configPath) }
-      catch(error){
-        if (error.code === 'ENOENT') this.config = await initConfig(this.configPath)
+      try{
+        this.config = await readConfig(this.configPath)
+      }catch(error){
+        if (error.code === 'ENOENT')
+          this.config = await initConfig(this.configPath)
         else throw error
       }
-      // console.log('CONFIG', this.config)
     })()
-    // mkdir this.storagePath
-    // read config
-    // if it doesnt exists initialize it with a new set of keys
     return this._ready
   }
 
@@ -94,7 +91,6 @@ export default class JlinxClient {
   }
 }
 
-
 async function readConfig(path){
   console.log('reading config at', path)
   const source = await fs.readFile(path, 'utf-8')
@@ -107,6 +103,6 @@ async function initConfig(path){
     uuid: keyToString(createSigningKeyPair().publicKey),
   }
   console.log('writing config', config)
-  const source = await fs.writeFile(path, ini.stringify(config))
+  await fs.writeFile(path, ini.stringify(config))
   return config
 }

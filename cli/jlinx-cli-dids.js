@@ -62,6 +62,6 @@ async function create(opts){
   const { jlinx } = await beforeEach(opts)
   const didDocument = await jlinx.createDidDocument()
   await didDocument.update()
+  console.log(`created did ${didDocument.did}`)
   console.log(didDocument.value)
-  console.log(`created did ${didDocument.id}`)
 }

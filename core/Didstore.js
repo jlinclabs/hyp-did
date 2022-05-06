@@ -1,10 +1,10 @@
-import { mkdir, chown, readdir, readFile, writeFile } from 'fs/promises'
+import Path from 'path'
+import Corestore from 'corestore'
 
 import Filestore from './Filestore.js'
-import HypercoreClient from './HypercoreClient.js'
 import {
   isJlinxDid,
-  createSigningKeyPair,
+
   keyToBuffer,
   keyToDid,
   didToKey,
@@ -15,9 +15,10 @@ import DidDocument from './DidDocument.js'
 export default class Didstore extends Filestore {
 
   constructor({ storagePath, keystore, corestore }){
-    super({ storagePath })
+    const path = (...parts) => Path.join(storagePath, ...parts)
+    super({ storagePath: path('dids') })
+    this.corestore = new Corestore(path('cores'))
     this.keystore = keystore
-    this.corestore = corestore
   }
 
   _matchFilename(filename){ return isJlinxDid(filename) }
