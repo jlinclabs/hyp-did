@@ -20,7 +20,7 @@ import {
  * we want to use OS specific more-secure solutions like
  * apple's keychain
  */
-export default class Keychain {
+export default class KeyPairVault {
   constructor(options = {}){
     const { storagePath } = options
     this.storagePath = storagePath
@@ -56,9 +56,10 @@ export default class Keychain {
     if (keypair && keypair.valid) return keypair
   }
 
-  async writeKeyPair(keyPair){
+  async write(keyPair){
     const path = this.path(keyPair.publicKey)
     await mkdir(this.storagePath).catch(safetyCatch)
+    // TODO validateSigningKeyPair || validateEncryptingKeyPair
     await writeFile(path, keyPair.secretKey)
     if (!b4a.equals(await readFile(path), keyPair.secretKey))
       throw new Error('failed to write key')
@@ -66,13 +67,13 @@ export default class Keychain {
 
   async createSigningKeyPair(){
     const keyPair = SigningKeyPair.create()
-    await this.writeKeyPair(keyPair)
+    await this.write(keyPair)
     return keyPair
   }
 
   async createEncryptingKeyPair(){
     const keyPair = EncryptingKeyPair.create()
-    await this.writeKeyPair(keyPair)
+    await this.write(keyPair)
     return keyPair
   }
 
