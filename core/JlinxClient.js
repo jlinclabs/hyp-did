@@ -71,7 +71,8 @@ export default class JlinxClient {
   }
 
   async resolveDid(did){
-    await this.ready()
+    // await this.ready()
+    const didDocument = await this.didstore.get(did)
   }
 
   async createDidDocument(){
@@ -97,7 +98,7 @@ export default class JlinxClient {
     })
     console.log(didDocument)
 
-    this.didstore.update({
+    await this.didstore.update({
       did,
       didDocument,
       signingKeyPair,

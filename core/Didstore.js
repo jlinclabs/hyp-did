@@ -40,6 +40,24 @@ export default class Didstore extends Filestore {
     return keyToDid(keyPair.publicKey)
   }
 
+  async _getCore(did){
+    const publicKey = didToKey(did)
+    console.log('???', {did, publicKey})
+    const keyPair = await this.keystore.get(publicKey)
+    console.log('_getCore keyPair', keyPair)
+    let secretKey
+    if (keyPair && keyPair.type === 'signing'){
+      secretKey = keyPair.secretKey
+    }else{
+      throw new Error(`unable to find private key for ${did}`)
+    }
+
+    const core = this.corestore.get({ key: keyToBuffer(publicKey), secretKey })
+    await core.update()
+    console.log('CORE!', core)
+    return core
+  }
+
   async update(opts){
     const {
       didDocument,
@@ -47,6 +65,14 @@ export default class Didstore extends Filestore {
     } = opts
     const did = didDocument.id
     await this.set(did)
+    // const publicKey = didToKey(did)
+    const core = await this._getCore(did)
+    await core.append(JSON.stringify(didDocument))
+    console.log('CORE2!', core)
+
   }
 }
 
+// class DidDocument {
+
+// }
