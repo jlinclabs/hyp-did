@@ -1,4 +1,4 @@
-# hyp-did
+# jlinx
 
 [Decentralized IDs (DIDs)](https://w3c.github.io/did-core/) 
 using the 
@@ -49,7 +49,7 @@ stores your keypairs. depending on the system it picks different storage strateg
 ## Usage
 
 ```js
-import { DidClient, Keychain } from 'hyp-did'
+import { DidClient, Keychain } from 'jlinx'
 const keys = new Keychain({ })
 keys.gener
 const DIDS = new DidClient({ keychain })
@@ -73,8 +73,8 @@ didDocument === {
 ```
 
 Also see the 
-[hyp-did-cli](./cli#readme) 
+[jlinx-cli](./cli#readme)
 and 
-[hyp-did-http-server](./http-server#readme)
+[jlinx-http-server](./http-server#readme)
 
 

@@ -1,5 +1,5 @@
 {
-  "name": "hyp-did-core",
+  "name": "jlinx-core",
   "type": "module",
   "version": "1.0.0",
   "description": "DIDs on Hypercore",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jlinclabs/hyp-did.git"
+    "url": "https://github.com/jlinclabs/jlinx.git"
   },
   "keywords": [
     "hypercore",
@@ -18,10 +18,10 @@
   "author": "Jared Grippe",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jlinclabs/hyp-did/issues"
+    "url": "https://github.com/jlinclabs/jlinx/issues"
   },
-  "homepage": "https://github.com/jlinclabs/hyp-did#readme",
+  "homepage": "https://github.com/jlinclabs/jlinx#readme",
   "dependencies": {
-    "hyp-did-core": "file:core"
+    "jlinx-core": "file:core"
   }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-process.title = "hyp-did"
+process.title = "jlinx"
 
 import Path from 'path'
 import operatingSystem from 'os'
@@ -10,12 +10,12 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import chalk from 'chalk'
 import fetch from 'node-fetch'
-import DidClient from 'hyp-did-core/DidClient.js'
-import Keychain from 'hyp-did-core/Keychain.js'
+import DidClient from 'jlinx-core/DidClient.js'
+import Keychain from 'jlinx-core/Keychain.js'
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(fileURLToPath(import.meta.url), '../../package.json'), 'utf8'))
 
-// MOVE THIS TO A ~/.hyp-did-cli/config
+// MOVE THIS TO A ~/.jlinx-cli/config
 const HOSTS = (process.env.HYP_DID_SERVERS || '').split(',').filter(x => x)
 
 export const commands = {
@@ -82,7 +82,7 @@ export const commands = {
     async command({ keychain, didClient }){
       console.log(keychain)
 
-      // TODO we need to start storing DIDs in in the .hyp-did dir too
+      // TODO we need to start storing DIDs in in the .jlinx dir too
       // and read a file of dids
 
       // ~/.jlinx/identites
@@ -163,8 +163,8 @@ function wrapCommand(cmd){
       process.exit(0)
     }
 
-    const storagePath = Path.join(operatingSystem.homedir(), '.hyp-did')
-    // TODO ensure ~/.hyp-did permissions
+    const storagePath = Path.join(operatingSystem.homedir(), '.jlinx')
+    // TODO ensure ~/.jlinx permissions
 
     if (args.verbose){
       console.error(`${chalk.gray(`storing hypercores in ${storagePath}`)}`)

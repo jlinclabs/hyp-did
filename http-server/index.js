@@ -4,8 +4,8 @@ import express from 'express'
 import ExpressPromiseRouter from 'express-promise-router'
 import hbs from 'express-hbs'
 import bodyParser from 'body-parser'
-import { DidClient } from 'hyp-did'
-import { isValidDID } from 'hyp-did/util.js'
+import { DidClient } from 'jlinx'
+import { isValidDID } from 'jlinx/util.js'
 
 const __dirname = Path.resolve(fileURLToPath(import.meta.url), '..')
 

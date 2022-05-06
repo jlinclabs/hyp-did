@@ -1,5 +1,5 @@
 {
-  "name": "hyp-did-cli",
+  "name": "jlinx-cli",
   "type": "module",
   "version": "1.0.0",
   "description": "commandline interface CLI working with DIDs on Hypercore",
@@ -8,11 +8,11 @@
     "test": "./scripts/test"
   },
   "bin": {
-    "hyp-did": "./hyp-did-cli.js"
+    "jlinx": "./jlinx-cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jlinclabs/hyp-did.git"
+    "url": "https://github.com/jlinclabs/jlinx.git"
   },
   "keywords": [
     "hypercore",
@@ -21,13 +21,13 @@
   "author": "Jared Grippe",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jlinclabs/hyp-did/issues"
+    "url": "https://github.com/jlinclabs/jlinx/issues"
   },
-  "homepage": "https://github.com/jlinclabs/hyp-did#readme",
+  "homepage": "https://github.com/jlinclabs/jlinx#readme",
   "dependencies": {
     "chalk": "^5.0.1",
     "node-fetch": "^3.2.4",
-    "hyp-did": "file:..",
+    "jlinx": "file:..",
     "subcommand": "^2.1.1"
   }
 }

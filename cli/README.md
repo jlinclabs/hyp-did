@@ -1,4 +1,4 @@
-# hyp-did-cli
+# jlinx-cli
 
 This command line interface allows for reading and writing
 [Decentralized IDs (DIDs)](https://w3c.github.io/did-core/) 
@@ -9,14 +9,14 @@ persisted and shared using the
 ## Setup
 
 ```bash
-$ npm install -g hyp-did-cli
-$ hyp-did-cli --help
+$ npm install -g jlinx-cli
+$ jlinx-cli --help
 ```
 
 ### Create a DID
 
 ```bash
-$ hyp-did create
+$ jlinx create
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28",
@@ -36,7 +36,7 @@ $ hyp-did create
 ### Resolve a DID
 
 ```bash
-$ hyp-did resolve 'did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28'
+$ jlinx resolve 'did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28'
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28",
@@ -56,7 +56,7 @@ $ hyp-did resolve 'did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28'
 ### Resolve a DID
 
 ```bash
-$ hyp-did resolve 'did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28'
+$ jlinx resolve 'did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28'
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:hyp:38tk783tfU3ESyYUM4BixeqsGykX3dGsLDW-elEB_28",

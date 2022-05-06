@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-process.title = "hyp-did-http-server"
+process.title = "jlinx-http-server"
 import Path from 'path'
 import { program } from 'commander'
 
@@ -29,6 +29,6 @@ server.start()
 // import path from 'path'
 // import { fileURLToPath } from 'url'
 // import chalk from 'chalk'
-// import { DidClient } from 'hyp-did'
+// import { DidClient } from 'jlinx'
 
 // const packageJson = JSON.parse(fs.readFileSync(path.join(fileURLToPath(import.meta.url), '../../package.json'), 'utf8'))
