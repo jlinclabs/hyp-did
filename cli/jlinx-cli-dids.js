@@ -45,10 +45,12 @@ async function resolve(did, opts){
   const { jlinx } = await beforeEach(opts)
   console.log('resolving did', did)
   const didDocument = await jlinx.resolveDid(did)
-  if (!didDocument)
+  if (!didDocument){
     console.error(`unable to resolve`)
-  else
-    console.log(didDocument)
+    return
+  }
+  await didDocument.update()
+  console.log(didDocument.value)
 }
 
 async function list(opts){

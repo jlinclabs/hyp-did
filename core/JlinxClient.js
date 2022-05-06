@@ -77,6 +77,7 @@ export default class JlinxClient {
   async resolveDid(did){
     // await this.ready()
     const didDocument = await this.didstore.get(did)
+    return didDocument
   }
 
   async createDidDocument(){
