@@ -32,6 +32,9 @@ stores your keypairs. depending on the system it picks different storage strateg
 
 ### Did Http Server
 ### Did CLI
+
+The CLI can do both of our two 
+
 ### Did Desktop / Mobile
 
 
@@ -45,6 +48,29 @@ stores your keypairs. depending on the system it picks different storage strateg
 5. the did server checks the secret, verifies the jwt and writes the initial document as json to the core
 4. the did server writes the initial did document to the core
 
+
+```js
+const jlinx = JlinxClient({
+  storagePath: '....',
+  // keyPairVault
+  // either
+})
+jlinx.keys.create()
+jlinx.keys.all()
+jlinx.keys.get(publicKey)
+
+jlinx.servers // -> set|map
+
+jlinx.createDidDocument({
+  signingKeyPair, // optional else created for you
+  encryptingKeyPair, // optional else created for you
+  hosted: false || jlinx.servers || [serverHost, serverHost]
+})
+jlinx.getDidDocument(did)
+// // decide which signing and encrypting keys you want to use for your did document
+// const signingKeyPair = await keyPairVault.createSigningKeyPair()
+// const encryptingKeyPair = await keyPairVault.createEncryptingKeyPair()
+```
 
 ## Usage
 
@@ -73,7 +99,7 @@ didDocument === {
 ```
 
 Also see the 
-[jlinx-cli](./cli#readme)
+[jlinx-cli](./cli#readme) 
 and 
 [jlinx-http-server](./http-server#readme)
 

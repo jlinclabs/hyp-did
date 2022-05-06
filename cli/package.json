@@ -26,8 +26,9 @@
   "homepage": "https://github.com/jlinclabs/jlinx#readme",
   "dependencies": {
     "chalk": "^5.0.1",
+    "ini": "^3.0.0",
+    "jlinx-core": "file:../core",
     "node-fetch": "^3.2.4",
-    "jlinx": "file:..",
     "subcommand": "^2.1.1"
   }
 }
