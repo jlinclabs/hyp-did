@@ -1,7 +1,10 @@
 import Path from 'path'
+import os from 'os'
 import ini from 'ini'
 import fs from 'fs/promises'
 import Corestore from 'corestore'
+import Didstore from './Didstore.js'
+import Keystore from './Keystore.js'
 import { keyToString, createSigningKeyPair } from './util.js'
 /*
  * ~/.jlinx
@@ -13,12 +16,28 @@ import { keyToString, createSigningKeyPair } from './util.js'
  */
 export default class JlinxClient {
 
+  static get defaultStoragePath(){ return Path.join(os.homedir(), '.jlinx') }
   constructor(opts){
-    this.storagePath = opts.storagePath // required
-    this.configPath = Path.join(this.storagePath, 'config.ini')
+    const path = (...parts) => Path.join(this.storagePath, ...parts)
+    this.storagePath = opts.storagePath || JlinxClient.defaultStoragePath
+    this.configPath = path('config.ini')
     // this.storagePath is required
     // this.server = opts.servers // get from config
-    this.corestore = new Corestore(Path.join(this.storagePath, 'cores'))
+    this.corestore = new Corestore(path('cores'))
+    this.keystore = new Keystore(path('keys'))
+    this.didstore = new Didstore(path('dids'))
+  }
+
+  [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
+    let indent = ''
+    if (typeof opts.indentationLvl === 'number')
+      while (indent.length < opts.indentationLvl) indent += ' '
+    return this.constructor.name + '(\n' +
+      indent + '  storagePath: ' + opts.stylize(this.storagePath, 'string') + '\n' +
+      indent + '  configPath: ' + opts.stylize(this.configPath, 'string') + '\n' +
+      // indent + '  size: ' + opts.stylize(this.size, 'number') + '\n' +
+      // indent + '  writable: ' + opts.stylize(this.writable, 'boolean') + '\n' +
+      indent + ')'
   }
 
   ready(){

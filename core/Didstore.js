@@ -3,12 +3,9 @@ import { createSigningKeyPair, keyToBuffer, keyToDid, didToKey } from './util.js
 import DidDocument from './DidDocument.js'
 
 
+export default class Didstore {
 
-export default class DidStore {
-
-  constructor(options = {}){
-    const { storagePath } = options
-    // super({ storagePath })
+  constructor(storagePath){
     this.storagePath = storagePath
   }
 
@@ -23,9 +20,9 @@ export default class DidStore {
       indent + ')'
   }
 
-  async init(){
+  // async init(){
 
-  }
+  // }
 
   async _getCore(key, secretKey){
     const core = this.corestore.get({ key: keyToBuffer(key), secretKey })
