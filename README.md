@@ -7,15 +7,32 @@ using the
 [SPEC](./SPEC.md)
 
 
-## Keychain
+## KeyPairStore
 
 stores your keypairs. depending on the system it picks different storage strategies
 
-## DidClient
+## DidStore
 
 - manages connection to hyperswarm
 - did read from core
 - replicate did documents across swarm
+- stores a list of dids you track on disk
+- needs a KeyPairStore to store didKeyPairs
+  - this is the same KeyPairStore on devices that can hypercore
+
+## HypercoreClient
+
+- used by DidStore to replicate dids across the jlinx hyperswarm
+- has a corestore and caches hypercores on disk
+- 
+
+
+
+## apps
+
+### Did Http Server
+### Did CLI
+### Did Desktop / Mobile
 
 
 ## Apps that cannot hyperswarm directly
