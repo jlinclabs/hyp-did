@@ -2,11 +2,14 @@ import HypercoreClient from './HypercoreClient.js'
 import { createSigningKeyPair, keyToBuffer, keyToDid, didToKey } from './util.js'
 import DidDocument from './DidDocument.js'
 
+
+
 export default class DidStore {
 
   constructor(options = {}){
     const { storagePath } = options
-    super({ storagePath })
+    // super({ storagePath })
+    this.storagePath = storagePath
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
@@ -18,6 +21,10 @@ export default class DidStore {
       indent + '  size: ' + opts.stylize(this.size, 'number') + '\n' +
       // indent + '  writable: ' + opts.stylize(this.writable, 'boolean') + '\n' +
       indent + ')'
+  }
+
+  async init(){
+
   }
 
   async _getCore(key, secretKey){
