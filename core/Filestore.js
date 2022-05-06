@@ -1,7 +1,8 @@
 import Path from 'path'
-import { mkdir, chown, readdir, readFile, writeFile } from 'fs/promises'
+import fs from 'fs/promises'
 import safetyCatch from 'safety-catch'
 import b4a from 'b4a'
+import { fsExists } from './util.js'
 
 /*
  * creates and stores private keys but never gives you then
@@ -30,23 +31,28 @@ export default class Filestore {
     return Path.join(this.storagePath, filename)
   }
 
+  async has(filename){
+    return this._matchFilename(filename) && await fsExists(filename)
+  }
+
   async _get(filename){
+    if (!this._matchFilename(filename)) return
     const path = this.path(filename)
-    return await readFile(path) // TODO handle missing dir error here
+    return await fs.readFile(path) // TODO handle missing dir error here
   }
 
   async _set(filename, value){
     const path = this.path(filename)
-    await mkdir(this.storagePath).catch(safetyCatch)
-    await writeFile(path, value)
+    await fs.mkdir(this.storagePath).catch(safetyCatch)
+    await fs.writeFile(path, value)
   }
 
-  _matchFilename(files){ return [...files] }
+  _matchFilename(filename){ return true }
 
   async keys(){
     let filenames
     try{
-      filenames = await readdir(this.storagePath)
+      filenames = await fs.readdir(this.storagePath)
     }catch(error){
       if (error && error.code === 'ENOENT') return []
       throw error

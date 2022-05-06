@@ -3,7 +3,10 @@
 import { keyToMultibase } from './util.js'
 
 export default class DidDocument {
+  constructor(opts){
+    this.did = opts.did
 
+  }
 }
 
 DidDocument.generate = function(opts){

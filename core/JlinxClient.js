@@ -6,7 +6,11 @@ import Corestore from 'corestore'
 import Didstore from './Didstore.js'
 import Keystore from './Keystore.js'
 import DidDocument from './DidDocument.js'
-import { keyToString, createSigningKeyPair } from './util.js'
+import {
+  keyToString,
+  createSigningKeyPair,
+  fsExists,
+} from './util.js'
 /*
  * ~/.jlinx
  * ~/.jlinx/config
@@ -56,7 +60,7 @@ export default class JlinxClient {
   ready(){
     if (!this._ready) this._ready = (async () => {
       console.log('looking at', this.storagePath)
-      if (!(await fs.stat(this.storagePath))) await fs.mkdir(this.storagePath)
+      if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
       try{ this.config = await readConfig(this.configPath) }
       catch(error){
         if (error.code === 'ENOENT') this.config = await initConfig(this.configPath)

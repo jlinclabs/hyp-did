@@ -1,4 +1,4 @@
-
+import fs from 'fs/promises'
 import b64 from 'urlsafe-base64'
 import b4a from 'b4a'
 import sodium from 'sodium-universal'
@@ -59,4 +59,14 @@ export function validateEncryptingKeyPair(keyPair) {
   const plain = b4a.allocUnsafe(cipher.length)
   sodium.crypto_box_open_detached(plain, cipher, mac, nonce, keyPair.publicKey, keyPair.secretKey)
   return b4a.equals(plain, message)
+}
+
+export async function fsExists(path){
+  try{
+    await fs.stat(path)
+    return true
+  }catch(error){
+    if (error.code === 'ENOENT') return false
+    throw error
+  }
 }
