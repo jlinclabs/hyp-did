@@ -6,13 +6,27 @@ const debug = Debug('jlinx:didstore')
 import Filestore from './Filestore.js'
 import {
   isJlinxDid,
-
   keyToBuffer,
   keyToDid,
   didToKey,
 } from './util.js'
 import DidDocument from './DidDocument.js'
 
+
+// MAYEB!?!?!
+
+// this class can handle manipulating dids that are stored locally
+// and
+/*
+
+  all dids on disk are "tracked"
+  they can point to localhost or a did server
+
+
+  if we want each did to point to an authoritative server
+  then we cant support the case where a desktop app
+  anonymously joins a swarm to sync their did. or can we?
+*/
 
 export default class Didstore extends Filestore {
 
@@ -30,6 +44,13 @@ export default class Didstore extends Filestore {
       !isJlinxDid(did) ||
       !(await this.has(did))
     ) return
+
+    // here we would read the local did file
+    // and use its content to determine if
+    // have a hyperswarm connection or not
+    // and fallback to a REST api server?
+
+
     const publicKey = didToKey(did)
     const core = await this._getCore(did)
     const didDocument = new DidDocument({ did, core })
