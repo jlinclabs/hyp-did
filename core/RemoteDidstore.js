@@ -14,10 +14,8 @@ import DidDocument from './DidDocument.js'
 
 export default class Didstore extends Filestore {
 
-  constructor({ storagePath, keystore, corestore }){
+  constructor({ storagePath }){
     super({ storagePath })
-    this.keystore = keystore
-    this.corestore = corestore
   }
 
   _matchFilename(filename){ return isJlinxDid(filename) }

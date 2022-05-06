@@ -63,11 +63,9 @@ export default class Filestore {
   async all(){
     const filenames = await this.keys()
     const all = []
-    console.log({ filenames })
     await Promise.all(
       filenames.map(async filename => {
         const value = await this.get(filename)
-        console.log({ filename, value })
         if (value) all.push(value)
       })
     )
