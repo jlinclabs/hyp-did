@@ -83,31 +83,23 @@ export default class JlinxClient {
   async createDidDocument(){
     // get a new did from either out own didstore or a remote didstore
 
-    console.log('creating new did')
-    const did = await this.didstore.createKeypair()
-    console.log({ did })
+    // console.log('creating new did')
+    const didDocument = await this.didstore.create()
+    console.log({ didDocument })
+    // console.log({ did })
 
-    console.log('generating keys')
+    // console.log('generating keys')
     const signingKeyPair = await this.keystore.createSigningKeyPair()
     const encryptingKeyPair = await this.keystore.createEncryptingKeyPair()
 
-    console.log({
-      signingKeyPair,
-      encryptingKeyPair,
-    })
-
-    const didDocument = DidDocument.generate({
-      did,
+    const value = DidDocument.generate({
+      did: didDocument.did,
       signingPublicKey: signingKeyPair.publicKey,
       encryptingPublicKey: encryptingKeyPair.publicKey,
     })
-    console.log(didDocument)
 
-    await this.didstore.update({
-      did,
-      didDocument,
-      signingKeyPair,
-    })
+    // const didDocument = await this.didstore.get(did)
+    await didDocument.amend(value)
     // this.didstore.set(did, didDocument)
     return didDocument
   }

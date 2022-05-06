@@ -28,26 +28,22 @@ export default class Didstore extends Filestore {
       !(await this.has(did))
     ) return
     // if ()
+    const publicKey = didToKey(did)
     const core = await this._getCore(did)
-    const didDocument = new DidDocument({
-      did,
-      core,
-      // value,
-      // onUpdate
-    })
+    const didDocument = new DidDocument({ did, core })
     return didDocument
   }
 
   async set(did){
-    console.log({ did })
-    // const json = JSON.stringify(didDocument)
     await this._set(did, did)
   }
 
-  async createKeypair(){
+  async create(){
+    // in the remove client this would be an HTTP post
     const keyPair = await this.keystore.createSigningKeyPair()
-    console.log('created new signign keypair for new did', keyPair)
-    return keyToDid(keyPair.publicKey)
+    const did = keyToDid(keyPair.publicKey)
+    await this.set(did)
+    return await this.get(did)
   }
 
   async _getCore(did){
@@ -60,25 +56,8 @@ export default class Didstore extends Filestore {
       throw new Error(`unable to find private key for ${did}`)
     }
     const core = this.corestore.get({ key: keyToBuffer(publicKey), secretKey })
-    // await core.update()
+    await core.update()
     return core
   }
 
-  async update(opts){
-    const {
-      didDocument,
-      signingKeyPair,
-    } = opts
-    const did = didDocument.id
-    await this.set(did)
-    // const publicKey = didToKey(did)
-    const core = await this._getCore(did)
-    await core.append(JSON.stringify(didDocument))
-    console.log('CORE2!', core)
-
-  }
 }
-
-// class DidDocument {
-
-// }

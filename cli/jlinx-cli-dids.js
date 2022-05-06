@@ -16,7 +16,6 @@ async function beforeEach(opts){
 
 program.action(async (opts) => {
   const { jlinx } = await beforeEach(opts)
-  console.log('dids!', opts)
 })
 
 
@@ -41,30 +40,32 @@ program
 program.parseAsync(process.argv)
 
 async function resolve(did, opts){
-  console.log({ did, opts })
   const { jlinx } = await beforeEach(opts)
-  console.log('resolving did', did)
   const didDocument = await jlinx.resolveDid(did)
   if (!didDocument){
     console.error(`unable to resolve`)
     return
   }
   await didDocument.update()
+  console.log(didDocument)
   console.log(didDocument.value)
 }
 
 async function list(opts){
   const { jlinx } = await beforeEach(opts)
-  console.log('listing all our dids')
   const didDocuments = await jlinx.didstore.all()
-  for (const didDocument of didDocuments)
+  if (didDocuments.length === 0){
+    console.log(`you have 0 did documents`)
+  }else for (const didDocument of didDocuments){
     console.log(didDocument)
+  }
 }
 
 async function create(opts){
-  console.log('creating did…')
   const { jlinx } = await beforeEach(opts)
   const didDocument = await jlinx.createDidDocument()
+  await didDocument.update()
+  console.log(didDocument.value)
   console.log(`created did ${didDocument.id}`)
 }
 

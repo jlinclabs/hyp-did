@@ -41,10 +41,7 @@ export default class DidDocument {
     this.loaded = true
     if (this.core.length > 0){
       const json = await this.core.get(this.core.length - 1)
-      this._value = {
-        ...JSON.parse(json),
-        did: this.did, // <--- remove this and use didDocument.id
-      }
+      this._value = JSON.parse(json)
     }
   }
 
@@ -58,49 +55,55 @@ export default class DidDocument {
     return this.core.length > 0
   }
 
-  async create(){
-    // maybe check that the core is empty first? validations?
-
-
-    // TODO
-    // each entry in the hypercore is a JWT
-    // JWT is signed by did signing keys
-    // we need a layer between here and where the other different did keys are
-
-
-
-    const payload = JSON.stringify({
-      "@context": "https://w3id.org/did/v1",
-      id: this.did,
-      created: new Date,
-      publicKey: [
-        {
-          id: this.did,
-          type: 'ed25519', // ???
-          owner: this.did,
-          publicKeyBase64: this.publicKey,
-          // TODO seperate did-signing and did-encrypting
-        },
-      ]
-    })
-    const signature = sign(payload, this.signingKey)
-    const jwt = '??'
-
-    await this._append(jwt)
-
-    await this.update()
-    // write to it
-    // ¿ ensure it was replicated to a permanode ?
-      // we could curl a did-server and invoke their caching of it
+  async amend(value){
+    // if (!this.writable)
+    //   throw new Error(`did document is not writable`)
+    return await this.core.append([JSON.stringify(value)])
   }
 
+  // async create(){
+  //   // // maybe check that the core is empty first? validations?
 
-  async _append(newValue){
-    // await this.update()
-    newValue = { ...newValue, updatedAt: new Date }
-    const json = JSON.stringify(newValue)
-    return await this.core.append([json])
-  }
+
+  //   // // TODO
+  //   // // each entry in the hypercore is a JWT
+  //   // // JWT is signed by did signing keys
+  //   // // we need a layer between here and where the other different did keys are
+
+
+
+  //   // const payload = JSON.stringify({
+  //   //   "@context": "https://w3id.org/did/v1",
+  //   //   id: this.did,
+  //   //   created: new Date,
+  //   //   publicKey: [
+  //   //     {
+  //   //       id: this.did,
+  //   //       type: 'ed25519', // ???
+  //   //       owner: this.did,
+  //   //       publicKeyBase64: this.publicKey,
+  //   //       // TODO seperate did-signing and did-encrypting
+  //   //     },
+  //   //   ]
+  //   // })
+  //   // const signature = sign(payload, this.signingKey)
+  //   // const jwt = '??'
+
+  //   // await this._append(jwt)
+
+  //   // await this.update()
+  //   // // write to it
+  //   // // ¿ ensure it was replicated to a permanode ?
+  //   //   // we could curl a did-server and invoke their caching of it
+  // }
+
+
+  // async _append(newValue){
+  //   // await this.update()
+  //   newValue = { ...newValue, updatedAt: new Date }
+  //   const json = JSON.stringify(newValue)
+  //   return await this.core.append([json])
+  // }
 
 }
 
