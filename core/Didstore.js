@@ -23,14 +23,17 @@ export default class Didstore extends Filestore {
   _matchFilename(filename){ return isJlinxDid(filename) }
 
   async get(did){
-    if (!(await this.has(did))) return
+    if (
+      !isJlinxDid(did) ||
+      !(await this.has(did))
+    ) return
     // if ()
     const didDocument = new DidDocument({
       did,
-      value,
-      onUpdate
+      // value,
+      // onUpdate
     })
-    return did
+    return didDocument
   }
 
   async set(did){

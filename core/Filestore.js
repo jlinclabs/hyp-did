@@ -32,7 +32,7 @@ export default class Filestore {
   }
 
   async has(filename){
-    return this._matchFilename(filename) && await fsExists(filename)
+    return this._matchFilename(filename) && await fsExists(this.path(filename))
   }
 
   async _get(filename){
@@ -63,9 +63,11 @@ export default class Filestore {
   async all(){
     const filenames = await this.keys()
     const all = []
+    console.log({ filenames })
     await Promise.all(
       filenames.map(async filename => {
         const value = await this.get(filename)
+        console.log({ filename, value })
         if (value) all.push(value)
       })
     )
