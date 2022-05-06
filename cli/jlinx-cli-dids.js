@@ -35,30 +35,36 @@ program
 program
   .command('create')
   // .argument('<did>', 'the did to')
-  // .option('--', 'the did to resolve')
+  .option('-k --keys <keys>', 'a comma separated list of keys to include in the did document')
   .action(create)
 
 program.parseAsync(process.argv)
 
-
-async function resolve(opts){
+async function resolve(did, opts){
+  console.log({ did, opts })
   const { jlinx } = await beforeEach(opts)
-  console.log('resolving did', opts.did)
-  const didDocument = await jlinx.resolveDid(opts.did)
-  console.log(didDocument)
+  console.log('resolving did', did)
+  const didDocument = await jlinx.resolveDid(did)
+  if (!didDocument)
+    console.error(`unable to resolve`)
+  else
+    console.log(didDocument)
 }
 
 async function list(opts){
   const { jlinx } = await beforeEach(opts)
   console.log('listing all our dids')
-  const dids = await jlinx.didstore.all()
-  console.log(dids)
+  const didDocuments = await jlinx.didstore.all()
+  for (const didDocument of didDocuments)
+    console.log(didDocument)
 }
 
-async function create(){
+async function create(opts){
   console.log('creating did…')
+  const { jlinx } = await beforeEach(opts)
+  const didDocument = await jlinx.createDidDocument()
+  console.log(`created did ${didDocument.id}`)
 }
-
 
 // import Path from 'path'
 // import os from 'os'

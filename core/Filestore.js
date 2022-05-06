@@ -11,7 +11,7 @@ import b4a from 'b4a'
  */
 
 export default class Filestore {
-  constructor(storagePath){
+  constructor({ storagePath }){
     this.storagePath = storagePath
   }
 
@@ -43,18 +43,22 @@ export default class Filestore {
 
   _matchFilename(files){ return [...files] }
 
-  async all(){
-    let files
+  async keys(){
+    let filenames
     try{
-      files = await readdir(this.storagePath)
+      filenames = await readdir(this.storagePath)
     }catch(error){
       if (error && error.code === 'ENOENT') return []
       throw error
     }
-    files = files.filter(filename => this._matchFilename(filename))
+    return filenames.filter(filename => this._matchFilename(filename))
+  }
+
+  async all(){
+    const filenames = await this.keys()
     const all = []
     await Promise.all(
-      files.map(async filename => {
+      filenames.map(async filename => {
         const value = await this.get(filename)
         if (value) all.push(value)
       })

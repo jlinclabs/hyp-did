@@ -23,6 +23,9 @@ export const keyToBuffer = key =>
 export const keyToDid = key =>
   `${PREFIX}${keyToString(key)}`
 
+export const keyToMultibase = key =>
+  `u${keyToString(key)}`
+
 export const didToKey = did =>
   DID_JLINX_REGEXP.test(did) && RegExp.$1
 

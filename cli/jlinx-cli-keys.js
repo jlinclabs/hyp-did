@@ -47,5 +47,5 @@ async function create(opts){
   else if (opts.type === 'encrypting')
     keyPair = await jlinx.keystore.createEncryptingKeyPair()
   else throw new Error(`invalid type "${opts.type}"`)
-  console.log(`created ${keyPair.type} key pair: ${keyPair.publicKeyAsString}`)
+  console.log(`created ${keyPair.type} key pair: ${keyPair.id}`)
 }

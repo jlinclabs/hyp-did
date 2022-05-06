@@ -14,46 +14,39 @@ import DidDocument from './DidDocument.js'
 
 export default class Didstore extends Filestore {
 
+  constructor({ storagePath, keystore, corestore }){
+    super({ storagePath })
+    this.keystore = keystore
+    this.corestore = corestore
+  }
+
   _matchFilename(filename){ return isJlinxDid(filename) }
 
-
   async get(did){
-
+    // const did = await this._get(did)
+    // if ()
+    return did
   }
 
-  async set(did, didDocument){
-
+  async set(did){
+    console.log({ did })
+    // const json = JSON.stringify(didDocument)
+    await this._set(did, did)
   }
-  // // async init(){
 
-  // // }
+  async createKeypair(){
+    const keyPair = await this.keystore.createSigningKeyPair()
+    console.log('created new signign keypair for new did', keyPair)
+    return keyToDid(keyPair.publicKey)
+  }
 
-  // async _getCore(key, secretKey){
-  //   const core = this.corestore.get({ key: keyToBuffer(key), secretKey })
-  //   // await core.update()
-  //   return core
-  // }
-
-  // async get(did, secretKey){
-  //   // const publicKey = didToPublicKey(did)
-  //   await this.ready()
-  //   const core = await this._getCore(didToKey(did), secretKey)
-  //   await core.update()
-  //   const didDocument = new DidDocument(did, core)
-  //   // await didDocument.update() // ??
-  //   if (await didDocument.exists()) return didDocument
-  // }
-
-  // async create({ didKeyPair, signingKeyPair, encryptingKeyPair }){
-  //   // await this.ready()
-  //   // const didSigningKeyPair = createKeyPair() // when do we do this if its doable on another machine?
-  //   // const hypercoreKeyPair = createSigningKeyPair()
-  //   const did = keyToDid(didKeyPair.publicKey)
-  //   const core = await this._getCore(didKeyPair.publicKey, didKeyPair.secretKey)
-  //   const didDocument = new DidDocument(did, core)
-  //   await didDocument.create()
-  //   return didDocument
-  // }
-
+  async update(opts){
+    const {
+      didDocument,
+      signingKeyPair,
+    } = opts
+    const did = didDocument.id
+    await this.set(did)
+  }
 }
 

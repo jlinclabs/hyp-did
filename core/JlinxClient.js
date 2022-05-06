@@ -5,6 +5,7 @@ import fs from 'fs/promises'
 import Corestore from 'corestore'
 import Didstore from './Didstore.js'
 import Keystore from './Keystore.js'
+import DidDocument from './DidDocument.js'
 import { keyToString, createSigningKeyPair } from './util.js'
 /*
  * ~/.jlinx
@@ -25,8 +26,19 @@ export default class JlinxClient {
     // this.storagePath is required
     // this.server = opts.servers // get from config
     this.corestore = new Corestore(path('cores'))
-    this.keystore = new Keystore(path('keys'))
-    this.didstore = new Didstore(path('dids'))
+    this.keystore = new Keystore({
+      storagePath: path('keys')
+    })
+    // didstore can either be Didstore or RemoteDidStore
+    this.didstore = new Didstore({
+      storagePath: path('dids'),
+      keystore: this.keystore,
+      corestore: this.corestore,
+    })
+    // // TODO add support for RemoteDidStore
+    // this.didstore = new RemoteDidstore({
+    //   host: 'https://dids.jlinc.io',
+    // })
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
@@ -60,6 +72,38 @@ export default class JlinxClient {
 
   async resolveDid(did){
     await this.ready()
+  }
+
+  async createDidDocument(){
+    // get a new did from either out own didstore or a remote didstore
+
+    console.log('creating new did')
+    const did = await this.didstore.createKeypair()
+    console.log({ did })
+
+    console.log('generating keys')
+    const signingKeyPair = await this.keystore.createSigningKeyPair()
+    const encryptingKeyPair = await this.keystore.createEncryptingKeyPair()
+
+    console.log({
+      signingKeyPair,
+      encryptingKeyPair,
+    })
+
+    const didDocument = DidDocument.generate({
+      did,
+      signingPublicKey: signingKeyPair.publicKey,
+      encryptingPublicKey: encryptingKeyPair.publicKey,
+    })
+    console.log(didDocument)
+
+    this.didstore.update({
+      did,
+      didDocument,
+      signingKeyPair,
+    })
+    // this.didstore.set(did, didDocument)
+    return didDocument
   }
 
 }

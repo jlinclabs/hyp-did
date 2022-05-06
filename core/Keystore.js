@@ -45,43 +45,20 @@ export default class Keystore extends Filestore {
     const publicKey = keyToString(keyPair.publicKey)
     await this._set(publicKey, keyPair.secretKey)
     const keyPair2 = await this.get(publicKey)
-
-    // const path = this.path(keyPair.publicKey)
-    // await mkdir(this.storagePath).catch(safetyCatch)
-    // // TODO validateSigningKeyPair || validateEncryptingKeyPair
-    // await writeFile(path, keyPair.secretKey)
     if (!b4a.equals(await this._get(publicKey), keyPair.secretKey))
       throw new Error('failed to write key')
   }
 
   async createSigningKeyPair(){
     const keyPair = SigningKeyPair.create()
-    await this.write(keyPair)
+    await this.set(keyPair)
     return keyPair
   }
 
   async createEncryptingKeyPair(){
     const keyPair = EncryptingKeyPair.create()
-    await this.write(keyPair)
+    await this.set(keyPair)
     return keyPair
-  }
-
-  async all(){
-    try{
-      const files = await readdir(this.storagePath)
-      const all = []
-      await Promise.all(
-        files.map(async filename => {
-          if (!isPublicKey(filename)) return
-          const keyPair = await this.get(filename)
-          if (keyPair) all.push(keyPair)
-        })
-      )
-      return all
-    }catch(error){
-      if (error && error.code === 'ENOENT') return []
-      throw error
-    }
   }
 }
 
