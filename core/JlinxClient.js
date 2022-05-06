@@ -17,6 +17,7 @@ import { keyToString, createSigningKeyPair } from './util.js'
 export default class JlinxClient {
 
   static get defaultStoragePath(){ return Path.join(os.homedir(), '.jlinx') }
+
   constructor(opts){
     const path = (...parts) => Path.join(this.storagePath, ...parts)
     this.storagePath = opts.storagePath || JlinxClient.defaultStoragePath

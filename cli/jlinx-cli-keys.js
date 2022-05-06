@@ -7,30 +7,30 @@ import JlinxClient from 'jlinx-core/JlinxClient.js'
 program
   .option('-s --storage <path>', 'path to the jlinx directory', JlinxClient.defaultStoragePath)
 
-program.action((...args) => {
-  console.log('keys progrsm defualt action')
+async function beforeEach(opts){
+  const jlinx = new JlinxClient({
+    storagePath: program.opts().storage,
+  })
+  return { jlinx }
+}
+
+program.action(async (opts) => {
+  const { jlinx } = await beforeEach(opts)
+  console.log('keys progrsm defualt action', opts)
 })
 
 program
   .command('list')
-  // .argument('<did>', 'the did to')
-  // .option('--', 'the did to resolve')
+  .option('-s --storage <path>')
   .action(list)
 
 program
   .command('create')
-  // .argument('<did>', 'the did to')
   .option('-t --type <type>', 'signing or encrypting', 'signing')
   .action(create)
 
 program.parseAsync(process.argv)
 
-async function beforeEach(opts){
-  const jlinx = new JlinxClient({
-    storagePath: opts.storage,
-  })
-  return { jlinx }
-}
 
 async function list(opts){
   const { jlinx } = await beforeEach(opts)
