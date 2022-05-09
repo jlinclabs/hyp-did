@@ -29,7 +29,6 @@
     "commander": "^9.2.0",
     "debug": "^4.3.4",
     "jlinx": "file:..",
-    "ini": "^3.0.0",
     "node-fetch": "^3.2.4",
     "subcommand": "^2.1.1"
   }
