@@ -18,7 +18,7 @@ export default function createHypDidHttpServer(opts){
   const app = express()
 
   app.start = async function start(){
-    app.didClient = new DidClient({
+    app.jlinxServer = new JlinxServer({
       storagePath,
     })
 
@@ -33,13 +33,13 @@ export default function createHypDidHttpServer(opts){
       })
 
     await Promise.all([
-      app.didClient.connect(),
+      app.jlinxServer.connect(),
       start(),
     ])
   }
 
   app.stop = async function stop() {
-    if (app.didClient) promises.push(app.didClient.destroy())
+    if (app.jlinxServer) promises.push(app.jlinxServer.destroy())
     if (app.server) promises.push(app.server.stop())
     await Promise.all(promises)
   }
@@ -74,7 +74,7 @@ export default function createHypDidHttpServer(opts){
     if (did && did.startsWith('did:')) return res.redirect(`/${did}`)
 
     if (req.accepts('html')) return res.render('index', {
-      hyperswarmStatus: JSON.stringify(await app.didClient.status(), null, 2),
+      hyperswarmStatus: JSON.stringify(await app.jlinxServer.status(), null, 2),
     })
     next()
   })
@@ -83,8 +83,8 @@ export default function createHypDidHttpServer(opts){
     const did = req.params[0]
     if (!isValidDID(did)) return renderError(req, res, `invalid did DID=${did}`, 400)
     console.log('resolving', did)
-    await app.didClient.ready()
-    const didDocument = await app.didClient.get(did)
+    await app.jlinxServer.ready()
+    const didDocument = await app.jlinxServer.resolveDid(did)
     if (!didDocument) return renderError(req, res, `unable to resolve DID=${did}`, 404)
     console.log('updating', did)
     if (!didDocument.loaded) await didDocument.update()

@@ -8,6 +8,7 @@ const debug = Debug('jlinx:client')
 import Didstore from './Didstore.js'
 import Keystore from './Keystore.js'
 import DidDocument from './DidDocument.js'
+import JlinxServer from './JlinxServer.js'
 import {
   keyToString,
   createSigningKeyPair,
@@ -20,20 +21,30 @@ import {
  * ~/.jlinx/dids
  * ~/.jlinx/dids/${did} (containts did document)
  * ~/.jlinx/keys/${publicKeyAsUrlSafeMd5} (contains private key)
+ *
+ * new JlinxClient()
+ * new JlinxClient({
+ *   storagePath: '/somewhere/else',
+ *   server: new JlinxRemoteServer({
+ *      url: 'https://dids.jlinx.io',
+ *   })
+ * })
  */
 export default class JlinxClient {
 
-  static get defaultStoragePath(){ return Path.join(os.homedir(), '.jlinx') }
+  static get defaultStoragePath(){
+    return Path.join(os.homedir(), '.jlinx')
+  }
 
   constructor(opts){
-    const path = (...parts) => Path.join(this.storagePath, ...parts)
-
     this.storagePath = opts.storagePath || JlinxClient.defaultStoragePath
-    this.configPath = path('config.ini')
-    // this.storagePath is required
+
+    this.configPath = Path.join(this.storagePath, 'config.ini')
+
     // this.server = opts.servers // get from config
+
     this.keystore = new Keystore({
-      storagePath: path('keys')
+      storagePath: Path.join(this.storagePath, 'keys')
     })
 
     // this needs to be a generaic client object that always
@@ -48,10 +59,13 @@ export default class JlinxClient {
     })
 
 
-    // // TODO add support for RemoteDidStore
-    // this.didstore = new RemoteDidstore({
-    //   host: 'https://dids.jlinc.io',
-    // })
+    this.server =  (
+      opts.server ||
+      new JlinxServer({
+        storagePath: this.storagePath,
+        keystore: this.keystore,
+      })
+    )
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
@@ -97,6 +111,8 @@ export default class JlinxClient {
       encryptingPublicKey: encryptingKeyPair.publicKey,
     })
     await didDocument.amend(value)
+    // await this.server.replicateDid(didDocument)
+    await this.server.resolveDid(didDocument.did)
     return didDocument
   }
 }
