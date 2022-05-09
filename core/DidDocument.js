@@ -65,6 +65,8 @@ DidDocument.generate = function(opts){
     encryptingPublicKey,
   } = opts
 
+  // TODO https://www.w3.org/TR/did-core/#did-document-metadata
+
   return {
     '@context': this.contextUrl,
     id: did,
