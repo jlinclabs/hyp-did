@@ -3,7 +3,6 @@
 const NAME = 'jlinx'
 process.title = NAME
 
-
 import { program } from 'commander'
 
 program.name(NAME)
