@@ -7,8 +7,15 @@ using the
 [SPEC](./SPEC.md)
 
 
+## Jlinx client apps
+
+- track dids
+- store keys
+- talk to a jlinx server
+
 ## JlinxClient
 
+- talk to a local or remote jlinx server
 - has a keyStore
 - has a didStore
   - depending on the did actions are either sent to a local or remote did server
@@ -18,10 +25,16 @@ using the
 (move all hypercore stuff here)
 
 - has a keyStore
-- has a didStore
-- has a coreStore
+- has a Hyperswarm
+- has a CoreStore
 - manages connection to hyperswarm
 - replicates did documents across swarm
+
+## KeyStore
+
+- stores crypto keys safely 
+
+
 
 ### Actions
 

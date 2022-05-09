@@ -41,26 +41,14 @@ export default class JlinxClient {
 
     this.configPath = Path.join(this.storagePath, 'config.ini')
 
-    // this.server = opts.servers // get from config
-
+    // used to store crypto keys locally
     this.keystore = new Keystore({
       storagePath: Path.join(this.storagePath, 'keys')
     })
 
-    // this needs to be a generaic client object that always
-    // talks to a did http server either running remotely or locally
-
-
-    // didstore can either be Didstore or RemoteDidStore
-    this.didstore = new Didstore({
-      storagePath: this.storagePath,
-      keystore: this.keystore,
-      // corestore: new Corestore(path('cores')),
-    })
-
-
     this.server =  (
       opts.server ||
+      // TODO check config.ini for server options
       new JlinxServer({
         storagePath: this.storagePath,
         keystore: this.keystore,
@@ -97,22 +85,22 @@ export default class JlinxClient {
 
   async resolveDid(did){
     // await this.ready()
-    const didDocument = await this.didstore.get(did)
-    return didDocument
+    return await this.server.resolveDid(did)
   }
 
-  async createDidDocument(){
-    const didDocument = await this.didstore.create()
+  async createDid(){
+    const { did } = await this.server.createDid()
+    console.log({ did })
     const signingKeyPair = await this.keystore.createSigningKeyPair()
     const encryptingKeyPair = await this.keystore.createEncryptingKeyPair()
     const value = DidDocument.generate({
-      did: didDocument.did,
+      did,
       signingPublicKey: signingKeyPair.publicKey,
       encryptingPublicKey: encryptingKeyPair.publicKey,
     })
-    await didDocument.amend(value)
-    // await this.server.replicateDid(didDocument)
-    await this.server.resolveDid(didDocument.did)
+    await this.server.updateDid(did, value)
+    console.log({ did, value })
+    const didDocument = await this.server.resolveDid(didDocument.did)
     return didDocument
   }
 }

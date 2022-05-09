@@ -8,11 +8,12 @@ import {
 
 export default class DidDocument {
 
-  constructor({did, core}){
-    console.log('new DidDocument', {did, core})
+  constructor(did, opts){
+    console.log('new DidDocument', did)
     this.did = did
-    this.publicKey = didToKey(did)
-    this.core = core
+    this.server = opts.server
+    // this.publicKey = didToKey(did)
+    // this.core = core
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
@@ -21,9 +22,9 @@ export default class DidDocument {
       while (indent.length < opts.indentationLvl) indent += ' '
     return this.constructor.name + '(\n' +
       indent + '  did: ' + opts.stylize(this.did, 'string') + '\n' +
-      indent + '  writable: ' + opts.stylize(this.writable, 'boolean') + '\n' +
-      indent + '  published: ' + opts.stylize(this.published, 'boolean') + '\n' +
-      indent + '  loaded: ' + opts.stylize(this.loaded, 'boolean') + '\n' +
+      // indent + '  writable: ' + opts.stylize(this.writable, 'boolean') + '\n' +
+      // indent + '  published: ' + opts.stylize(this.published, 'boolean') + '\n' +
+      // indent + '  loaded: ' + opts.stylize(this.loaded, 'boolean') + '\n' +
       // indent + '  publicKey: ' + opts.stylize(this.publicKey, 'string') + '\n' +
       // indent + '  value: ' + opts.stylize(this.value ? JSON.stringify(this.value) : '', 'string') + '\n' +
       indent + ')'
