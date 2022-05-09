@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from 'commander'
-import JlinxClient from 'jlinx/JlinxClient.js'
+import JlinxClient from 'jlinx-client'
 
 program
   .option('-s --storage <path>', 'path to the jlinx directory', JlinxClient.defaultStoragePath)

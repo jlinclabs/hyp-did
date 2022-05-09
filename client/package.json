@@ -1,14 +1,11 @@
 {
-  "name": "jlinx-cli",
+  "name": "jlinx-client",
   "type": "module",
   "version": "1.0.0",
-  "description": "commandline interface CLI working with DIDs on Hypercore",
+  "description": "DIDs on Hypercore",
   "main": "index.js",
   "scripts": {
     "test": "./scripts/test"
-  },
-  "bin": {
-    "jlinx": "./jlinx-cli.js"
   },
   "repository": {
     "type": "git",
@@ -25,11 +22,10 @@
   },
   "homepage": "https://github.com/jlinclabs/jlinx#readme",
   "dependencies": {
-    "chalk": "^5.0.1",
-    "commander": "^9.2.0",
+    "@jlinc/jwt": "^1.0.3",
+    "autobase": "^1.0.0-alpha.8",
     "debug": "^4.3.4",
-    "jlinx-client": "file:../client",
-    "node-fetch": "^3.2.4",
-    "subcommand": "^2.1.1"
+    "ini": "^3.0.0",
+    "urlsafe-base64": "^1.0.0"
   }
 }

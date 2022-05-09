@@ -7,6 +7,23 @@ using the
 [SPEC](./SPEC.md)
 
 
+```
+
+CLI
+  |_ JlinxApp
+    |- filesystem
+    |- JlinxClient
+    |- JlinxServer
+
+JlinxClient
+  |- http
+
+JlinxServer
+  |- filesystem
+  |- hypercore
+
+```
+
 ## Jlinx client apps
 
 - track dids

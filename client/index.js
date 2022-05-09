@@ -5,10 +5,10 @@ import fs from 'fs/promises'
 
 import Debug from 'debug'
 const debug = Debug('jlinx:client')
-import Didstore from './Didstore.js'
-import Keystore from './Keystore.js'
+// import Didstore from './Didstore.js'
+// import JlinxServer from 'jlinx-server'
+import Keystore from 'jlinx-core/KeyStore.js'
 import DidDocument from './DidDocument.js'
-import JlinxServer from './JlinxServer.js'
 import {
   keyToString,
   createSigningKeyPair,
@@ -49,9 +49,10 @@ export default class JlinxClient {
     this.server =  (
       opts.server ||
       // TODO check config.ini for server options
-      new JlinxServer({
-        storagePath: this.storagePath,
-        keystore: this.keystore,
+      new JlinxHttpServer({
+        url: 'https://jlinx.io',
+        // storagePath: this.storagePath,
+        // keystore: this.keystore,
       })
     )
   }

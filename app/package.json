@@ -1,14 +1,11 @@
 {
-  "name": "jlinx-cli",
+  "name": "jlinx-app",
   "type": "module",
   "version": "1.0.0",
-  "description": "commandline interface CLI working with DIDs on Hypercore",
+  "description": "Bass class for making apps on JLINX",
   "main": "index.js",
   "scripts": {
     "test": "./scripts/test"
-  },
-  "bin": {
-    "jlinx": "./jlinx-cli.js"
   },
   "repository": {
     "type": "git",
@@ -25,11 +22,8 @@
   },
   "homepage": "https://github.com/jlinclabs/jlinx#readme",
   "dependencies": {
-    "chalk": "^5.0.1",
-    "commander": "^9.2.0",
     "debug": "^4.3.4",
     "jlinx-client": "file:../client",
-    "node-fetch": "^3.2.4",
-    "subcommand": "^2.1.1"
+    "jlinx-server": "file:../server"
   }
 }
