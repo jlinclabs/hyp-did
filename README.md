@@ -13,7 +13,7 @@ using the
 - has a didStore
   - depending on the did actions are either sent to a local or remote did server
 
-## ServerClient
+## JlinxServer
 
 (move all hypercore stuff here)
 
