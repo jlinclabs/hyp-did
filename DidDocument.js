@@ -9,6 +9,7 @@ import {
 export default class DidDocument {
 
   constructor({did, core}){
+    console.log('new DidDocument', {did, core})
     this.did = did
     this.publicKey = didToKey(did)
     this.core = core

@@ -97,4 +97,10 @@ export default class HypercoreClient {
       }),
     }
   }
+
+  async getCore(key, secretKey){
+    const core = this.corestore.get({ key: keyToBuffer(key), secretKey })
+    // await core.update()
+    return core
+  }
 }
