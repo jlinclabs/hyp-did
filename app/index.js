@@ -79,6 +79,7 @@ export default class JlinxApp {
 
   async createDid(){
     const { did, secret } = await this.agent.createDid()
+    await this.dids.track(did)
     debug({ did, secret })
     debug(`creating did=${did}`)
     const signingKeyPair = await this.keys.createSigningKeyPair()

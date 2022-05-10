@@ -16,16 +16,11 @@ export default class JlinxAgent {
     this.keys = opts.keys || new KeyStore(Path.join(this.storagePath, 'keys'))
     this.dids = opts.dids || new DidStore(Path.join(this.storagePath, 'dids'))
 
-
     // this.seed = dht.hash(Buffer.from(this.storagePath)) // TODO add more uniqueness here
-
-
-
 
     this.hypercore = new HypercoreClient({
       storagePath: this.storagePath,
     })
-    // super({ storagePath })
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
@@ -99,19 +94,19 @@ export default class JlinxAgent {
 }
 
 
-async function isDidCore(core){
-  try{
-    await core.update()
-    if (core.length === 0) {
-      debug('isDidCore empty')
-      return false
-    }
-    let header = await core.get(0)
-    header = JSON.parse(header)
-    debug({ header })
-    return header.jlinx && header.type.startsWith('jlinx-did-document-')
-  }catch(error){
-    debug('isDidCore error', error)
-    return false
-  }
-}
+// async function isDidCore(core){
+//   try{
+//     await core.update()
+//     if (core.length === 0) {
+//       debug('isDidCore empty')
+//       return false
+//     }
+//     let header = await core.get(0)
+//     header = JSON.parse(header)
+//     debug({ header })
+//     return header.jlinx && header.type.startsWith('jlinx-did-document-')
+//   }catch(error){
+//     debug('isDidCore error', error)
+//     return false
+//   }
+// }

@@ -105,6 +105,7 @@ export default class Ledger {
   async getValue(){
     const events = await this.getEvents()
     debug('GET VALUE', { events })
+    if (events.length === 0) return
     let value = {}
     for (const entry of events)
       value = this.applyEvent(value, entry, events)

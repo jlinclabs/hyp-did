@@ -11,9 +11,11 @@ export default class Didstore extends FileStore {
     // return JSON.parse(json)
   }
 
-
   async get(did){
     if (await this.has(did)) return did
   }
 
+  async track(did){
+    await this.set(did, did)
+  }
 }
