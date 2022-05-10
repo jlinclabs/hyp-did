@@ -1,7 +1,6 @@
 import Debug from 'debug'
 import Path from 'path'
 import fs from 'fs/promises'
-import ini from 'ini'
 
 // import JlinxClient from 'jlinx-client'
 // import JlinxServer from 'jlinx-server'
@@ -25,7 +24,7 @@ export default class JlinxApp {
     this.storagePath = opts.storagePath
     if (!this.storagePath) throw new Error(`${this.constructor.name} requires 'storagePath'`)
     this.remote = opts.remote
-    this.config = new Config(Path.join(this.storagePath, 'config.ini'))
+    this.config = new Config(Path.join(this.storagePath, 'config.json'))
     this.keys = new KeyStore(Path.join(this.storagePath, 'keys'))
     this.dids = new DidStore(Path.join(this.storagePath, 'dids'))
   }
@@ -43,19 +42,11 @@ export default class JlinxApp {
     if (!this._ready) this._ready = (async () => {
       debug(`config: ${this.storagePath}`)
       if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
-      await this.config.read()
-      // try{
-      //   this.config = await readConfig(this.configPath)
-      // }catch(error){
-      //   if (error.code === 'ENOENT'){
-      //     debug('initializing config at', this.configPath)
-      //     this.config = await initConfig(this.configPath)
-      //   }else {
-      //     throw error
-      //   }
-      // }
+      const { uuid, servers } = await this.config.read()
+      this.uuid = this.uuid
+      this.servers = this.servers || []
 
-      this.agent = this.remote
+      this.agent = this.remote // TODO maybe change agent depending on config
         ? new JlinxRemoteAgent(this.remote)
         : new JlinxAgent({
           storagePath: this.storagePath,
@@ -71,6 +62,18 @@ export default class JlinxApp {
     debug('DESTROUOING KLIXN APP', this)
     // if (this.agent && this.agent.destroy)
     this.agent.destroy()
+  }
+
+  async getServers(){
+    const { servers } = await this.config.read()
+    return servers || []
+  }
+
+  async addServer(server){
+    if (!server.host) throw new Error(`host is required`)
+    const servers = await this.getServers()
+    servers.push(server)
+    await this.config.patch({ servers })
   }
 
   async resolveDid(did){
@@ -139,10 +142,10 @@ function generateDidDocument(opts){
 }
 
 const DEFAULT_SERVERS = [
-  // {
-  //   host: 'https://dids.jlinx.io',
-  //   publicKey: `INSERT KEY HERE`,
-  // },
+  {
+    host: 'https://dids.jlinx.io',
+    // publicKey: '9rFz9zIvdUtM9bMQuqnnL0gKNNOSozfVtsvjT6mx88Q', // TODO replace with real public key
+  },
 ]
 
 
@@ -151,26 +154,22 @@ class Config {
     this.path = path
   }
 
-  // [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
-  //   return this.constructor.name + '(' + opts.stylize({a:12}, 'object') + ')'
-  // }
-
   async read(){
     debug('reading config at', this.path)
     try{
       const source = await fs.readFile(this.path, 'utf-8')
-      this._value = ini.parse(source)
+      this.value = JSON.parse(source)
     }catch(error){
-      if (error.code === 'ENOENT') await initConfig(this)
+      if (error.code === 'ENOENT') await this.init()
       else throw error
     }
+    return this.value
   }
 
   async write(newValue){
-    this._value = newValue
-    await fs.writeFile(this.path, ini.stringify(this._value))
+    await fs.writeFile(this.path, JSON.stringify(newValue, null, 2))
+    return this.value = newValue
   }
-
 
   async init(){
     debug('initializing config at', this.path)
@@ -180,11 +179,20 @@ class Config {
     })
   }
 
-  get value(){
-    if (!this._value) throw new Error('config not ready yet')
-    return this._value
+  async patch(patch){
+    await this.read()
+    await this.write({
+      ...this.value,
+      ...patch,
+    })
   }
+  // get value(){
+  //   if (!this.value) throw new Error('config not ready yet')
+  //   return this.value
+  // }
 
-  get uuid(){ this.value().uuid }
+  // get uuid(){ this.value.uuid }
+
+  // get servers(){ this.value.servers || [] }
 }
 

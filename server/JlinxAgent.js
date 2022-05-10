@@ -1,4 +1,5 @@
 import Debug from 'debug'
+import Path from 'path'
 import { createRandomString, keyToDid, didToKey } from 'jlinx-core/util.js'
 import HypercoreClient from './HypercoreClient.js'
 import Ledger from './Ledger.js'
@@ -19,7 +20,7 @@ export default class JlinxAgent {
     // this.seed = dht.hash(Buffer.from(this.storagePath)) // TODO add more uniqueness here
 
     this.hypercore = new HypercoreClient({
-      storagePath: this.storagePath,
+      storagePath: Path.join(this.storagePath, 'cores'),
     })
   }
 
