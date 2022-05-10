@@ -21,15 +21,13 @@ export default class HypercoreClient {
   }
 
   async connect(){
+    if (this._connecting) return await this._connecting
+
     if (this.destroyed) {
       console.trace(`ALREADY DESTROYED`)
       throw new Error(`ALREADY DESTROYED`)
     }
 
-    if (this._ready) {
-      console.trace(`HypercoreClient#connect already connected :/`)
-      return await this._ready
-    }
     debug(`HypercoreClient connecting to hyperswarm`)
     this.swarm = new Hyperswarm({
       keyPair: this.keyPair,
@@ -60,23 +58,22 @@ export default class HypercoreClient {
     this.discovery = this.swarm.join(topic)
 
     debug('flushing discovery…')
-    this._ready = this.discovery.flushed().then(async () => {
-      if (this.destroyed) {
-        debug('discovery flushed after destroy. aborting')
-        return
-      }
-      debug('discovery flushed!')
-      debug('connected?', this.swarm.connections.size)
-      if (this.swarm.connections.size === 0){
-        await this.swarm.flush() // Waits for the swarm to connect to pending peers.
-      }
-      debug(`connected to ${this.swarm.connections.size} peers :D`)
-      debug(`HYPERCORE CLIENT READY!`)
-      this._connected = true
-    })
+    this._connecting = this.discovery.flushed()
     // debug('.listed')
     // await this.swarm.listen()
     // debug('listening…')
+  }
+
+  async connected(){
+    if (!this._connecting) await this.connect()
+    await this._connecting
+  }
+
+  async hasPeers(){
+    await this.connected()
+    debug('has peers?', this.swarm.connections.size)
+    if (this.swarm.connections.size > 0) return
+    await this.swarm.flush()
   }
 
   async ready(){
@@ -85,6 +82,7 @@ export default class HypercoreClient {
   }
 
   async destroy(){
+    if (this.destroyed) return
     debug('destroying!')
     this.destroyed = true
     if (this.swarm){
