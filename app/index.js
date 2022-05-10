@@ -106,14 +106,11 @@ export default class JlinxApp {
 
   async getDidReplicationUrls(did){
     await this.ready()
-    debug('!!!!!!!! getting servers…')
     const servers = await this.config.getServers()
-    debug('!!!!!!!! getting servers', servers)
     return servers.map(server => `${server.host}/${did}`)
   }
 
   async replicateDid(did){
-
     // TODO make this less of a mess
     await this.ready()
     await this.agent.ready()
@@ -126,7 +123,9 @@ export default class JlinxApp {
     const results = await Promise.all(
       servers.map(url => replicateDid(did, url))
     )
+    const successes = results.map(r => r && r.id === did)
     debug('replicateion results', results)
+    // results.sortBy('created')[0]
     if (results.every(success => !success))
       throw new Error(`replication failed`)
   }
@@ -134,23 +133,25 @@ export default class JlinxApp {
 
 
 async function replicateDid(did, url){
-  // const url = `${server.host}/${did}`
   debug(`replicating did=${did} at ${url}`)
-  debug(`GET ${url}`)
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json'
-    }
-  })
-  debug({ response })
-  if (!response.ok){
-    debug('replication failed', url)
-    return false
+  async function attempt(){
+    // const url = `${server.host}/${did}`
+    debug(`attempting to replicating did=${did} at ${url}`)
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json'
+      }
+    })
+    const didDocument = response.ok ? await response.json() : null
+    if (didDocument && didDocument.id === did) return didDocument
+    debug('replication failed', response)
   }
-  const didDocument = await response.json()
-  debug('replication successful', didDocument)
-  return didDocument
+  const start = Date.now()
+  while (Date.now() - start < 20000){
+    const didDocument = await attempt()
+    if (didDocument) return didDocument
+  }
 }
 
 
@@ -216,9 +217,7 @@ class Config {
   }
 
   async write(newValue){
-    debug('writing config file', this.path)
     await fs.writeFile(this.path, JSON.stringify(newValue, null, 2))
-    debug('writing done')
     return this.value = newValue
   }
 
@@ -231,9 +230,7 @@ class Config {
   }
 
   async getServers(){
-    debug('Config#getServers…')
     const { servers } = await this.read()
-    debug('Config#getServers…', servers)
     return servers || []
   }
 
