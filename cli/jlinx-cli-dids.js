@@ -40,9 +40,9 @@ async function resolve(did, opts){
   const { jlinx } = program
   const didDocument = await jlinx.resolveDid(did)
   if (didDocument){
-    console.log(didDocument)
+    program.log(didDocument)
   }else{
-    console.error(`unable to resolve`)
+    program.error(`unable to resolve`)
   }
   // await didDocument.update()
   // console.log(didDocument.value)
@@ -51,25 +51,25 @@ async function resolve(did, opts){
 async function list(opts){
   const { jlinx } = program
   const dids = await jlinx.dids.all()
-  console.log(`you have ${dids.length} did documents`)
+
+  program.info(`you have ${dids.length} did documents`)
   for (const did of dids){
     const writable = jlinx.keys.has(didToKey(did))
-    console.log(did, writable ? '' : '(readonly)')
+    program.log(did, writable ? '' : '(readonly)')
   }
 }
 
 async function create(opts){
-  program.debug('CREATE OPTS', opts)
   const { jlinx } = program
   const didDocument = await jlinx.createDid()
   const did = didDocument.id
-  // await didDocument.update()
-  // console.log(`created did ${didDocument}`)
-  console.log(didDocument)
+  program.info('Created DID Document', did)
+  program.log(didDocument)
   if (opts.replicate) await replicate(did, {})
 }
 
 async function replicate(did, opts){
+  program.info('Replicating DID', did)
   await program.jlinx.replicateDid(did)
 }
 
