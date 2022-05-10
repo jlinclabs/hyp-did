@@ -82,16 +82,7 @@ export default class JlinxAgent {
       secret,
     })
     debug('created did', { did, didDocument, secret })
-    // await didDocument.update()
     return { did, secret }
-    // // await this.ready()
-    // // const didSigningKeyPair = createKeyPair() // when do we do this if its doable on another machine?
-    // // const hypercoreKeyPair = createSigningKeyPair()
-    // const did = keyToDid(didKeyPair.publicKey)
-    // const core = await this.hypercore.getCore(didKeyPair.publicKey, didKeyPair.secretKey)
-    // const didDocument = new DidDocument(did, { server: this })
-    // await didDocument.create()
-    // return didDocument
   }
 
   async amendDid({did, secret, value}){
@@ -99,22 +90,10 @@ export default class JlinxAgent {
     const didDocument = await this.getLedger(did)
     debug('amendDid', { didDocument })
     const before = await didDocument.getValue()
-    // await didDocument.update()
     await didDocument.setValue(value)
     const after = await didDocument.getValue()
     debug('amended did', { did, before, after })
     return after
-
-    // if (core.length === 0)
-    //   throw new Error(`invalid did=${did} core is empty`)
-
-    // const { did, secret } = await core.get(0)
-    // if (!(await isDidCore(core)))
-    //   throw new Error(`invalid did=${did} core is not a did document`)
-
-
-    // await core.append([JSON.stringify(value)])
-    // return await this.resolveDid(did)
   }
 
 }
