@@ -60,14 +60,11 @@ export default class Ledger {
   async append(...events){
     // if (this.core.length === 0) // ensure entries[0] is a header record
     return await this.core.append(
-      events.map(({eventType, ...payload}) => {
-        if (!eventType)
-          throw new Error(`eventType is required`)
+      events.map(event => {
         return JSON.stringify({
           jlinxVersion: VERSION,
           at: new Date,
-          eventType,
-          payload,
+          event,
         })
       })
     )
@@ -81,7 +78,7 @@ export default class Ledger {
 
   async getEvent(index){
     const json = await this.core.get(index)
-    return JSON.parse(json)
+    return JSON.parse(json).event
   }
 
   async getEvents(){
