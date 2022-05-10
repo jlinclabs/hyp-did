@@ -25,6 +25,8 @@ program.hook('preAction', async () => {
     remote,
   })
   await program.jlinx.ready()
+  debug('jlinx', program.jlinx)
+  debug('jlinx.config', program.jlinx.config)
 })
 program.hook('postAction', async () => {
   debug('shutting down…')

@@ -25,7 +25,7 @@ export default class JlinxApp {
     this.storagePath = opts.storagePath
     if (!this.storagePath) throw new Error(`${this.constructor.name} requires 'storagePath'`)
     this.remote = opts.remote
-    this.configPath = Path.join(this.storagePath, 'config.ini')
+    this.config = new Config(Path.join(this.storagePath, 'config.ini'))
     this.keys = new KeyStore(Path.join(this.storagePath, 'keys'))
     this.dids = new DidStore(Path.join(this.storagePath, 'dids'))
   }
@@ -43,16 +43,17 @@ export default class JlinxApp {
     if (!this._ready) this._ready = (async () => {
       debug(`config: ${this.storagePath}`)
       if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
-      try{
-        this.config = await readConfig(this.configPath)
-      }catch(error){
-        if (error.code === 'ENOENT'){
-          debug('initializing config at', this.configPath)
-          this.config = await initConfig(this.configPath)
-        }else {
-          throw error
-        }
-      }
+      await this.config.read()
+      // try{
+      //   this.config = await readConfig(this.configPath)
+      // }catch(error){
+      //   if (error.code === 'ENOENT'){
+      //     debug('initializing config at', this.configPath)
+      //     this.config = await initConfig(this.configPath)
+      //   }else {
+      //     throw error
+      //   }
+      // }
 
       this.agent = this.remote
         ? new JlinxRemoteAgent(this.remote)
@@ -98,24 +99,6 @@ export default class JlinxApp {
 }
 
 
-async function readConfig(path){
-  debug('reading config at', path)
-  const source = await fs.readFile(path, 'utf-8')
-  return ini.parse(source)
-}
-
-async function initConfig(path){
-  debug('initializing config at', path)
-  const config = {
-    uuid: keyToString(createSigningKeyPair().publicKey),
-  }
-  debug('writing config', config)
-  await fs.writeFile(path, ini.stringify(config))
-  return config
-}
-
-
-
 
 
 
@@ -154,3 +137,54 @@ function generateDidDocument(opts){
     ],
   }
 }
+
+const DEFAULT_SERVERS = [
+  // {
+  //   host: 'https://dids.jlinx.io',
+  //   publicKey: `INSERT KEY HERE`,
+  // },
+]
+
+
+class Config {
+  constructor(path){
+    this.path = path
+  }
+
+  // [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
+  //   return this.constructor.name + '(' + opts.stylize({a:12}, 'object') + ')'
+  // }
+
+  async read(){
+    debug('reading config at', this.path)
+    try{
+      const source = await fs.readFile(this.path, 'utf-8')
+      this._value = ini.parse(source)
+    }catch(error){
+      if (error.code === 'ENOENT') await initConfig(this)
+      else throw error
+    }
+  }
+
+  async write(newValue){
+    this._value = newValue
+    await fs.writeFile(this.path, ini.stringify(this._value))
+  }
+
+
+  async init(){
+    debug('initializing config at', this.path)
+    await this.write({
+      uuid: keyToString(createSigningKeyPair().publicKey),
+      servers: [...DEFAULT_SERVERS],
+    })
+  }
+
+  get value(){
+    if (!this._value) throw new Error('config not ready yet')
+    return this._value
+  }
+
+  get uuid(){ this.value().uuid }
+}
+
