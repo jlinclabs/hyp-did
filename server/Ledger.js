@@ -96,14 +96,19 @@ export default class Ledger {
   }
 
   applyEvent(value, event){
-    return Object.assign({}, value, event.payload)
+    if (event && event.type === 'amend')
+      return Object.assign({}, value, event.changes)
+    else
+      return value
   }
 
   async getValue(){
     const events = await this.getEvents()
     debug('GET VALUE', { events })
-    const value = {}
-    for (const entry of events) this.applyEvent(value, entry, events)
+    let value = {}
+    for (const entry of events)
+      value = this.applyEvent(value, entry, events)
+    debug('GET VALUE', { value })
     return value
   }
 }
