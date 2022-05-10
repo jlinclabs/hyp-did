@@ -33,7 +33,16 @@ export default class JlinxApp {
     this.storagePath = opts.storagePath
     if (!this.storagePath) throw new Error(`${this.constructor.name} requires 'storagePath'`)
     this.remote = opts.remote /// <--- ???? :/
-    this.config = new Config(Path.join(this.storagePath, 'config.json'))
+    this.config = new Config(Path.join(this.storagePath, 'config.json'), async () => {
+      if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
+      debug('initializing jlinx storage at', this.config.path)
+      const keyPair = await this.keys.createSigningKeyPair()
+      debug('AGENT KEY', keyPair)
+      return {
+        agentPublicKey: keyPair.publicKeyAsString,
+        servers: [...DEFAULT_SERVERS],
+      }
+    })
     this.keys = new KeyStore(Path.join(this.storagePath, 'keys'))
     this.dids = new DidStore(Path.join(this.storagePath, 'dids'))
   }
@@ -50,23 +59,11 @@ export default class JlinxApp {
   ready(){
     if (!this._ready) this._ready = (async () => {
       debug(`config: ${this.storagePath}`)
-      if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
-      if (await this.config.exists()){
-        await this.config.read()
-      }else{
-        debug('initializing jlinx storage at', this.config.path)
-        const keyPair = await this.keys.createSigningKeyPair()
-        await this.config.write({
-          agentPublicKey: keyPair.publicKeyAsString,
-          servers: [...DEFAULT_SERVERS],
-        })
-      }
-      // const { agentPublicKey, servers } = this.config.value
-
+      const config = await this.config.read()
       this.agent = this.remote // TODO maybe change agent depending on config
         ? new JlinxRemoteAgent(this.remote)
         : new JlinxAgent({
-          publicKey: this.config.value.agentPublicKey,
+          publicKey: config.agentPublicKey,
           storagePath: this.storagePath,
           keys: this.keys,
           dids: this.dids,
@@ -109,8 +106,9 @@ export default class JlinxApp {
 
   async getDidReplicationUrls(did){
     await this.ready()
+    debug('!!!!!!!! getting servers…')
     const servers = await this.config.getServers()
-    debug('!!!!!!!!servers', servers)
+    debug('!!!!!!!! getting servers', servers)
     return servers.map(server => `${server.host}/${did}`)
   }
 
@@ -186,8 +184,9 @@ function generateDidDocument(opts){
 
 
 class Config {
-  constructor(path){
+  constructor(path, init){
     this.path = path
+    this.init = init
   }
 
   async exists(){
@@ -195,15 +194,21 @@ class Config {
   }
 
   async read(){
-    console.trace()
     debug('reading config at', this.path)
-    const source = await fs.readFile(this.path, 'utf-8')
-    this.value = JSON.parse(source)
+    try{
+      const source = await fs.readFile(this.path, 'utf-8')
+      this.value = JSON.parse(source)
+    }catch(error){
+      if (error.code === 'ENOENT') await this.write(await this.init())
+      else throw error
+    }
     return this.value
   }
 
   async write(newValue){
+    debug('writing config file', this.path)
     await fs.writeFile(this.path, JSON.stringify(newValue, null, 2))
+    debug('writing done')
     return this.value = newValue
   }
 
@@ -216,7 +221,9 @@ class Config {
   }
 
   async getServers(){
+    debug('Config#getServers…')
     const { servers } = await this.read()
+    debug('Config#getServers…', servers)
     return servers || []
   }
 

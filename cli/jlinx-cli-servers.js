@@ -22,7 +22,9 @@ program.parseAsync(process.argv)
 
 async function list(opts){
   const { jlinx } = program
+  program.debug('GET SERVERS…')
   const servers = await jlinx.config.getServers()
+  program.debug('GOT SERVERS', servers)
   console.log(`you have ${servers.length} servers`)
   for (const server of servers)
     console.log(server.host, '-', server.publicKey)
