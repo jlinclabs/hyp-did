@@ -37,7 +37,7 @@ using the
 
 - create did
 - resolve did
-- update did
+- amend did
 
 ### JlinxHttpServer
 
@@ -45,7 +45,7 @@ wraps `JlinxHypercoreClient` in http
 
 - create did `POST /dids/new`
 - resolve did `GET /did:*`
-- update did `POST /did:jlinx:xxxxxxx` {}
+- amend did `POST /did:jlinx:xxxxxxx` {}
 
 ### JlinxHttpClient
 
@@ -53,7 +53,7 @@ uses `JlinxHttpServer` as a proxy to `JlinxHypercoreClient`
 
 - create did
 - resolve did
-- update did
+- amend did
 
 ### JlinxApp
 
@@ -81,7 +81,7 @@ Jinx App
   |- DidTracker
     |- filesystem
   |- Jlinx DID Client
-    |- actions: resolve did, create did, update did
+    |- actions: resolve did, create did, amend did
       |- Jlinx Server || Jlinx Server HTTP Proxy
   
 

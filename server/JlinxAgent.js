@@ -54,32 +54,34 @@ export default class JlinxAgent {
       ? keyPair.secretKey : undefined
     const core = await this.hypercore.getCore(publicKey, secretKey)
     const ledger = new Ledger(did, core)
+    await ledger.ready()
     return ledger
   }
 
   async resolveDid(did){
     await this.ready()
     const didDocument = await this.getLedger(did)
-    debug({ didDocument })
+    debug('resolveDid', { did, didDocument })
     await didDocument.ready()
-    debug({ didDocument })
-    const entries = await didDocument.getEntries()
-    debug('DID DOC entries', entries)
+    debug('resolveDid', { did, didDocument })
+    // const entries = await didDocument.getEntries()
     const value = await didDocument.getValue()
-    debug('DID DOC VLAUE', value)
-    if (!(await didDocument.exists())) return didDocument.value
+    debug('resolveDid', { did, value })
+    return value
+    // if (!(await didDocument.exists())) return didDocument.value
   }
 
   async createDid(){
     const { publicKey } = await this.keys.createSigningKeyPair()
     const did = keyToDid(publicKey)
+    debug(`creating did=${did}`)
     const didDocument = await this.getLedger(did)
     const secret = createRandomString(32)
     await didDocument.initialize({
-      type: 'jlinx-did-document-v1',
+      docType: 'jlinx-did-document-v1',
       secret,
     })
-    debug({ did, didDocument, secret })
+    debug('created did', { did, didDocument, secret })
     // await didDocument.update()
     return { did, secret }
     // // await this.ready()
@@ -92,11 +94,16 @@ export default class JlinxAgent {
     // return didDocument
   }
 
-  async updateDid({did, secret, value}){
-    debug({ did, secret, value })
-
-    // const didDocument = await this.getLedger(did)
+  async amendDid({did, secret, value}){
+    debug('amendDid', { did, secret, value })
+    const didDocument = await this.getLedger(did)
+    debug('amendDid', { didDocument })
+    const before = await didDocument.getValue()
     // await didDocument.update()
+    await didDocument.append(value)
+    const after = await didDocument.getValue()
+    debug('amended did', { did, before, after })
+    return after
 
     // if (core.length === 0)
     //   throw new Error(`invalid did=${did} core is empty`)

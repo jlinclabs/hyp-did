@@ -80,6 +80,7 @@ export default class JlinxApp {
   async createDid(){
     const { did, secret } = await this.agent.createDid()
     debug({ did, secret })
+    debug(`creating did=${did}`)
     const signingKeyPair = await this.keys.createSigningKeyPair()
     const encryptingKeyPair = await this.keys.createEncryptingKeyPair()
     const value = generateDidDocument({
@@ -87,9 +88,10 @@ export default class JlinxApp {
       signingPublicKey: signingKeyPair.publicKey,
       encryptingPublicKey: encryptingKeyPair.publicKey,
     })
-    await this.agent.updateDid({did, secret, value})
-    // await this.agent.resolveDid(did)
-    return value
+    debug(`updating did=${did}`, value)
+    await this.agent.amendDid({did, secret, value})
+    return await this.agent.resolveDid(did)
+    // return value
   }
 
 }

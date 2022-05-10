@@ -1,3 +1,4 @@
+import Debug from 'debug'
 import Path from 'path'
 import Corestore from 'corestore'
 import Hyperswarm from 'hyperswarm'
@@ -5,6 +6,8 @@ import crypto from 'hypercore-crypto'
 import dht from '@hyperswarm/dht'
 import { keyToString, keyToBuffer, keyToDid } from 'jlinx-core/util.js'
 import topic from 'jlinx-core/topic.js'
+
+const debug = Debug('jlinx:hypercore')
 
 export default class HypercoreClient {
   constructor(options = {}){
@@ -24,13 +27,13 @@ export default class HypercoreClient {
     })
     this.swarmKey = keyToString(this.swarm.keyPair.publicKey)
 
-    console.log(`[Hyperlinc] connecting to swarm as`, this.swarmKey)
+    debug(`connecting to swarm as`, this.swarmKey)
 
     process.on('SIGTERM', () => { this.destroy() })
 
     this.swarm.on('connection', (conn) => {
-      console.log(
-        '[Hyperlinc] new peer connection from',
+      debug(
+        'new peer connection from',
         keyToString(conn.remotePublicKey)
       )
       // Is this what we want?
@@ -40,20 +43,20 @@ export default class HypercoreClient {
       })
     })
 
-    console.log(`joining topic: "${topic}"`)
+    debug(`joining topic: "${topic}"`)
     this.discovery = this.swarm.join(topic)
 
-    console.log('flushing discovery…')
+    debug('flushing discovery…')
     this._ready = this.discovery.flushed().then(async () => {
-      console.log('flushed!')
-      console.log('connected?', this.swarm.connections.size)
+      debug('flushed!')
+      debug('connected?', this.swarm.connections.size)
       if (this.swarm.connections.size > 0) return
       await this.swarm.flush() // Waits for the swarm to connect to pending peers.
-      console.log(`connected to ${this.swarm.connections.size} peers :D`)
+      debug(`connected to ${this.swarm.connections.size} peers :D`)
     })
-    // console.log('.listed')
+    // debug('.listed')
     // await this.swarm.listen()
-    // console.log('listening…')
+    // debug('listening…')
   }
 
   async ready(){
@@ -62,21 +65,21 @@ export default class HypercoreClient {
   }
 
   async destroy(){
-    console.log('[Hyperlinc] destroying!')
+    debug('destroying!')
     if (this.swarm){
-      console.log('[Hyperlinc] disconnecting from swarm')
-      console.log('[Hyperlinc] connections.size', this.swarm.connections.size)
-      console.log('[Hyperlinc] swarm.flush()')
+      debug('disconnecting from swarm')
+      debug('connections.size', this.swarm.connections.size)
+      debug('swarm.flush()')
       await this.swarm.flush()
-      console.log('[Hyperlinc] flushed!')
-      console.log('[Hyperlinc] connections.size', this.swarm.connections.size)
+      debug('flushed!')
+      debug('connections.size', this.swarm.connections.size)
       // await this.swarm.clear()
-      console.log('[Hyperlinc] swarm.destroy()')
+      debug('swarm.destroy()')
       await this.swarm.destroy()
-      console.log('[Hyperlinc] swarm destroyed. disconnected?')
-      console.log('[Hyperlinc] connections.size', this.swarm.connections.size)
+      debug('swarm destroyed. disconnected?')
+      debug('connections.size', this.swarm.connections.size)
       for (const conn of this.swarm.connections){
-        console.log('disconnecting dangling connection')
+        debug('disconnecting dangling connection')
         conn.destroy()
       }
     }

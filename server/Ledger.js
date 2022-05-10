@@ -57,48 +57,51 @@ export default class Ledger {
     return this.initialized
   }
 
-  async append(...entries){
+  async append(...events){
     // if (this.core.length === 0) // ensure entries[0] is a header record
     return await this.core.append(
-      entries.map(entry => {
+      events.map(({eventType, ...payload}) => {
+        if (!eventType)
+          throw new Error(`eventType is required`)
         return JSON.stringify({
           jlinxVersion: VERSION,
           at: new Date,
-          ...entry,
-          // add more metadata here?
+          eventType,
+          payload,
         })
       })
     )
   }
 
-  async initialize(header){
+  async initialize(metadata){
     await this.update()
     if (this.initialized) throw new Error(`did=${this.did} already initialized`)
-    await this.append(header)
+    await this.append({ eventType: 'init', ...metadata })
   }
 
-  async getEntry(index){
+  async getEvent(index){
     const json = await this.core.get(index)
     return JSON.parse(json)
   }
 
-  async getEntries(){
+  async getEvents(){
     await this.update()
     const length = this.core.length
     const entries = await Promise.all(
-      Array(length).fill().map((_, index) => this.getEntry(index))
+      Array(length).fill().map((_, index) => this.getEvent(index))
     )
     return entries
   }
 
-  applyEntry(value, entry){
-    return Object.assign({}, value, entry)
+  appleEvent(value, event){
+    return Object.assign({}, value, event.payload)
   }
 
   async getValue(){
-    const entries = await this.getEntries()
+    const events = await this.getEvents()
+    debug('GET VALUE', { events })
     const value = {}
-    for (const entry of entries) this.applyEntry(value, entry, entries)
+    for (const entry of events) this.appleEvent(value, entry, events)
     return value
   }
 }
