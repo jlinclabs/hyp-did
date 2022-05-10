@@ -78,7 +78,7 @@ export default class JlinxAgent {
     const didDocument = await this.getLedger(did)
     const secret = createRandomString(32)
     await didDocument.initialize({
-      docType: 'jlinx-did-document-v1',
+      type: 'jlinx-did-document-v1',
       secret,
     })
     debug('created did', { did, didDocument, secret })
@@ -100,7 +100,7 @@ export default class JlinxAgent {
     debug('amendDid', { didDocument })
     const before = await didDocument.getValue()
     // await didDocument.update()
-    await didDocument.append(value)
+    await didDocument.setValue(value)
     const after = await didDocument.getValue()
     debug('amended did', { did, before, after })
     return after

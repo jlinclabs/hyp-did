@@ -70,10 +70,15 @@ export default class Ledger {
     )
   }
 
-  async initialize(metadata){
+
+  async initialize(details){
     await this.update()
     if (this.initialized) throw new Error(`did=${this.did} already initialized`)
-    await this.append({ eventType: 'init', ...metadata })
+    await this.append({ type: 'init', ...details })
+  }
+
+  async setValue(changes){
+    await this.append({ type: 'amend', changes })
   }
 
   async getEvent(index){
@@ -90,7 +95,7 @@ export default class Ledger {
     return entries
   }
 
-  appleEvent(value, event){
+  applyEvent(value, event){
     return Object.assign({}, value, event.payload)
   }
 
@@ -98,7 +103,7 @@ export default class Ledger {
     const events = await this.getEvents()
     debug('GET VALUE', { events })
     const value = {}
-    for (const entry of events) this.appleEvent(value, entry, events)
+    for (const entry of events) this.applyEvent(value, entry, events)
     return value
   }
 }
