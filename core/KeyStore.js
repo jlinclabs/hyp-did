@@ -78,7 +78,7 @@ class KeyPair {
     this.id = keyToString(publicKey)
     this.valid = this.validate(secretKey)
   }
-  // get publicKeyAsString(){ return keyToString(this.publicKey) }
+  get publicKeyAsString(){ return this.id }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
     return this.constructor.name + '(' +

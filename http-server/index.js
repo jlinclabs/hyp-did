@@ -13,6 +13,8 @@ import JlinxAgent from 'jlinx-server/JlinxAgent.js'
 const __dirname = Path.resolve(fileURLToPath(import.meta.url), '..')
 
 export default function createHypDidHttpServer(opts){
+  for (const prop of 'port storagePath agentPublicKey'.split(' '))
+    if (!opts[prop]) throw new Error(`jlinx-http-server requires ${prop}`)
   const app = express()
   app.port = opts.port
   app.start = async function start(){
@@ -20,6 +22,7 @@ export default function createHypDidHttpServer(opts){
     app.keys = new KeyStore(Path.join(app.storagePath, 'keys'))
     app.dids = new DidStore(Path.join(app.storagePath, 'dids'))
     app.agent = new JlinxAgent({
+      publicKey: opts.agentPublicKey,
       storagePath: app.storagePath,
       keys: app.keys,
       dids: app.dids,

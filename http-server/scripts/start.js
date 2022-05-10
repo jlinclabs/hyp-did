@@ -1,15 +1,24 @@
 #!/usr/bin/env node
 
-import Path from 'path'
-import { fileURLToPath } from 'url'
 import hypDidServer from '../index.js'
 
+const optionsSpec = {
+  port: ['PORT'],
+  storagePath: ['JLINX_STORAGE'],
+  agentPublicKey: ['JLINX_AGENT_PUBLIC_KEY'],
+}
 const options = {}
-options.storagePath = (
-  process.env.HYP_DID_SERVER_STORAGE_PATH ||
-  Path.resolve(fileURLToPath(import.meta.url), '../../tmp/dids')
-)
-options.port = process.env.PORT || 59736
+for (const [option, [envVar]] of Object.entries(optionsSpec)){
+  const value = process.env[envVar]
+  if (!value) throw new Error(`environment variable ${envVar} is missing`)
+  options[option] = value
+}
+
 console.log(options)
-const server = hypDidServer(options)
+
+const server = hypDidServer({
+  port: process.env.PORT,
+  storagePath: process.env.JLINX_STORAGE,
+  agentPublicKey: process.env.JLINX_AGENT_PUBLIC_KEY,
+})
 server.start()

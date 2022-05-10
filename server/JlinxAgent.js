@@ -11,17 +11,12 @@ const debug = Debug('jlinx:agent')
 export default class JlinxAgent {
 
   constructor(opts){
-    this.agentId
+    this.publicKey = opts.publicKey
+    if (!this.publicKey) throw new Error(`${this.constructor.name} requires 'publicKey'`)
     this.storagePath = opts.storagePath
     if (!this.storagePath) throw new Error(`${this.constructor.name} requires 'storagePath'`)
     this.keys = opts.keys || new KeyStore(Path.join(this.storagePath, 'keys'))
     this.dids = opts.dids || new DidStore(Path.join(this.storagePath, 'dids'))
-
-    // this.seed = dht.hash(Buffer.from(this.storagePath)) // TODO add more uniqueness here
-
-    this.hypercore = new HypercoreClient({
-      storagePath: Path.join(this.storagePath, 'cores'),
-    })
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){
@@ -36,6 +31,10 @@ export default class JlinxAgent {
   }
 
   async ready(){
+    this.hypercore = new HypercoreClient({
+      storagePath: Path.join(this.storagePath, 'cores'),
+      keyPair: await this.keys.get(this.publicKey),
+    })
     await this.hypercore.ready()
   }
 

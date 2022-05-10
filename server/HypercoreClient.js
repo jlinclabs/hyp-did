@@ -10,9 +10,11 @@ import topic from 'jlinx-core/topic.js'
 const debug = Debug('jlinx:hypercore')
 
 export default class HypercoreClient {
-  constructor(options = {}){
-    const { storagePath } = options
-    this.storagePath = storagePath
+  constructor(opts = {}){
+    this.keyPair = opts.keyPair
+    if (!this.keyPair) throw new Error(`${this.constructor.name} requires 'keyPair'`)
+    this.storagePath = opts.storagePath
+    if (!this.storagePath) throw new Error(`${this.constructor.name} requires 'storagePath'`)
     this.seed = dht.hash(Buffer.from(this.storagePath)) // TODO add more uniqueness here
     this.corestore = new Corestore(this.storagePath)
   }
@@ -20,7 +22,8 @@ export default class HypercoreClient {
   async connect(){
     if (this._ready) return
     this.swarm = new Hyperswarm({
-      seed: this.seed,
+      keyPair: this.keyPair,
+      // seed: this.seed,
       // bootstrap: [
       //   { host: '127.0.0.1', port: 49736 },
       // ]

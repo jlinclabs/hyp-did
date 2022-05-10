@@ -20,6 +20,13 @@ import JlinxAgent from 'jlinx-server/JlinxAgent.js'
 
 const debug = Debug('jlinx:app')
 
+const DEFAULT_SERVERS = [
+  {
+    host: 'https://dids.jlinx.io',
+    // publicKey: '9rFz9zIvdUtM9bMQuqnnL0gKNNOSozfVtsvjT6mx88Q', // TODO replace with real public key
+  },
+]
+
 export default class JlinxApp {
 
   constructor(opts = {}){
@@ -44,13 +51,21 @@ export default class JlinxApp {
     if (!this._ready) this._ready = (async () => {
       debug(`config: ${this.storagePath}`)
       if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
-      const { uuid, servers } = await this.config.read()
-      this.uuid = this.uuid
-      this.servers = this.servers || []
+      if (await this.config.exists()){
+        await this.config.read()
+      }else{
+        const keyPair = await this.keys.createSigningKeyPair()
+        await this.config.write({
+          agentPublicKey: keyPair.publicKeyAsString,
+          servers: [...DEFAULT_SERVERS],
+        })
+      }
+      // const { agentPublicKey, servers } = this.config.value
 
       this.agent = this.remote // TODO maybe change agent depending on config
         ? new JlinxRemoteAgent(this.remote)
         : new JlinxAgent({
+          publicKey: this.config.value.agentPublicKey,
           storagePath: this.storagePath,
           keys: this.keys,
           dids: this.dids,
@@ -167,42 +182,26 @@ function generateDidDocument(opts){
   }
 }
 
-const DEFAULT_SERVERS = [
-  {
-    host: 'https://dids.jlinx.io',
-    // publicKey: '9rFz9zIvdUtM9bMQuqnnL0gKNNOSozfVtsvjT6mx88Q', // TODO replace with real public key
-  },
-]
-
 
 class Config {
   constructor(path){
     this.path = path
   }
 
+  async exists(){
+    await fsExists(this.path)
+  }
+
   async read(){
     debug('reading config at', this.path)
-    try{
-      const source = await fs.readFile(this.path, 'utf-8')
-      this.value = JSON.parse(source)
-    }catch(error){
-      if (error.code === 'ENOENT') await this.init()
-      else throw error
-    }
+    const source = await fs.readFile(this.path, 'utf-8')
+    this.value = JSON.parse(source)
     return this.value
   }
 
   async write(newValue){
     await fs.writeFile(this.path, JSON.stringify(newValue, null, 2))
     return this.value = newValue
-  }
-
-  async init(){
-    debug('initializing config at', this.path)
-    await this.write({
-      uuid: keyToString(createSigningKeyPair().publicKey),
-      servers: [...DEFAULT_SERVERS],
-    })
   }
 
   async patch(patch){
