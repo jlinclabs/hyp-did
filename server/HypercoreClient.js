@@ -11,6 +11,7 @@ const debug = Debug('jlinx:hypercore')
 
 export default class HypercoreClient {
   constructor(opts = {}){
+    console.trace('new HypercoreClient', opts)
     this.keyPair = opts.keyPair
     if (!this.keyPair) throw new Error(`${this.constructor.name} requires 'keyPair'`)
     this.storagePath = opts.storagePath
@@ -20,8 +21,16 @@ export default class HypercoreClient {
   }
 
   async connect(){
-    console.trace(`HypercoreClient#connect!`)
-    if (this._ready) return
+    if (this.destroyed) {
+      console.trace(`ALREADY DESTROYED`)
+      throw new Error(`ALREADY DESTROYED`)
+    }
+
+    if (this._ready) {
+      console.trace(`HypercoreClient#connect already connected :/`)
+      return await this._ready
+    }
+    debug(`HypercoreClient connecting to hyperswarm`)
     this.swarm = new Hyperswarm({
       keyPair: this.keyPair,
       // seed: this.seed,
@@ -52,11 +61,18 @@ export default class HypercoreClient {
 
     debug('flushing discovery…')
     this._ready = this.discovery.flushed().then(async () => {
-      debug('flushed!')
+      if (this.destroyed) {
+        debug('discovery flushed after destroy. aborting')
+        return
+      }
+      debug('discovery flushed!')
       debug('connected?', this.swarm.connections.size)
-      if (this.swarm.connections.size > 0) return
-      await this.swarm.flush() // Waits for the swarm to connect to pending peers.
+      if (this.swarm.connections.size === 0){
+        await this.swarm.flush() // Waits for the swarm to connect to pending peers.
+      }
       debug(`connected to ${this.swarm.connections.size} peers :D`)
+      debug(`HYPERCORE CLIENT READY!`)
+      this._connected = true
     })
     // debug('.listed')
     // await this.swarm.listen()
@@ -70,18 +86,19 @@ export default class HypercoreClient {
 
   async destroy(){
     debug('destroying!')
+    this.destroyed = true
     if (this.swarm){
       debug('disconnecting from swarm')
-      debug('connections.size', this.swarm.connections.size)
-      debug('swarm.flush()')
+      // debug('connections.size', this.swarm.connections.size)
+      // debug('swarm.flush()')
       await this.swarm.flush()
-      debug('flushed!')
-      debug('connections.size', this.swarm.connections.size)
-      // await this.swarm.clear()
-      debug('swarm.destroy()')
+      // debug('flushed!')
+      // debug('connections.size', this.swarm.connections.size)
+      // // await this.swarm.clear()
+      // debug('swarm.destroy()')
       await this.swarm.destroy()
-      debug('swarm destroyed. disconnected?')
-      debug('connections.size', this.swarm.connections.size)
+      // debug('swarm destroyed. disconnected?')
+      // debug('connections.size', this.swarm.connections.size)
       for (const conn of this.swarm.connections){
         debug('disconnecting dangling connection')
         conn.destroy()

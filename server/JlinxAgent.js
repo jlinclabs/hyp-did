@@ -41,7 +41,10 @@ export default class JlinxAgent {
         keyPair: await this.keys.get(this.publicKey),
       })
       await this.hypercore.ready()
+      debug(`JLINC AGENT READY!`)
+      this._connected = true
     })()
+    return this._ready
   }
 
   async destroy(){

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import Debug from 'debug'
 import Path from 'path'
 import os from 'os'
