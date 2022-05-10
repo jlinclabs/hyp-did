@@ -113,11 +113,13 @@ export default class JlinxApp {
   }
 
   async replicateDid(did){
+
+    // TODO make this less of a mess
     await this.ready()
-    debug(this.agent)
-    debug(this.agent.ready+'')
     await this.agent.ready()
     await this.agent.hypercore.ready() // await for hypercore peers
+    await this.agent.hypercore.hasPeers() // await for hypercore peers
+
     const servers = await this.getDidReplicationUrls(did)
     if (servers.length === 0)
       throw new Error(`unable to replicate. no servers listed in config ${this.config.path}`)

@@ -11,7 +11,6 @@ const debug = Debug('jlinx:hypercore')
 
 export default class HypercoreClient {
   constructor(opts = {}){
-    console.trace('new HypercoreClient', opts)
     this.keyPair = opts.keyPair
     if (!this.keyPair) throw new Error(`${this.constructor.name} requires 'keyPair'`)
     this.storagePath = opts.storagePath
@@ -70,9 +69,11 @@ export default class HypercoreClient {
   }
 
   async hasPeers(){
+    debug('has peers (called)')
     await this.connected()
     debug('has peers?', this.swarm.connections.size)
     if (this.swarm.connections.size > 0) return
+    debug('waiting for more peers!')
     await this.swarm.flush()
   }
 

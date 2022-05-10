@@ -11,7 +11,6 @@ const debug = Debug('jlinx:agent')
 export default class JlinxAgent {
 
   constructor(opts){
-    debug(this.constructor, opts)
     this.publicKey = opts.publicKey
     if (!this.publicKey) throw new Error(`${this.constructor.name} requires 'publicKey'`)
     this.storagePath = opts.storagePath
@@ -40,11 +39,14 @@ export default class JlinxAgent {
         storagePath: Path.join(this.storagePath, 'cores'),
         keyPair: await this.keys.get(this.publicKey),
       })
-      await this.hypercore.ready()
-      debug(`JLINC AGENT READY!`)
-      this._connected = true
+      debug('ready')
     })()
     return this._ready
+  }
+
+  async connected(){
+    await this.ready()
+    await this.hypercore.connected()
   }
 
   async destroy(){
@@ -52,6 +54,7 @@ export default class JlinxAgent {
   }
 
   async getLedger(did){
+    await this.ready()
     const publicKey = didToKey(did)
     const keyPair = await this.keys.get(publicKey)
     const secretKey = keyPair && keyPair.type === 'signing'
@@ -64,13 +67,16 @@ export default class JlinxAgent {
 
   async resolveDid(did){
     await this.ready()
-    const didDocument = await this.getLedger(did)
-    debug('resolveDid', { did, didDocument })
-    await didDocument.ready()
-    debug('resolveDid', { did, didDocument })
-    const value = await didDocument.getValue()
-    debug('resolveDid', { did, value })
-    return value
+    debug('resolving did', { did })
+    const ledger = await this.getLedger(did)
+    debug(ledger)
+    if (await ledger.exists())
+      return await ledger.getValue()
+    await this.connected()
+    await this.hypercore.hasPeers()
+    debug('resolving did via swarm', { did })
+    if (await ledger.exists())
+      return await ledger.getValue()
   }
 
   async createDid(){
