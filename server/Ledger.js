@@ -1,8 +1,10 @@
+import Debug from 'debug'
 import Path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
 import { didToKey, keyToString } from 'jlinx-core/util.js'
 
+const debug = Debug('jlinx:ledger')
 const packageJson = JSON.parse(fs.readFileSync(Path.join(fileURLToPath(import.meta.url), '../package.json'), 'utf8'))
 const VERSION = packageJson.version
 
@@ -73,5 +75,30 @@ export default class Ledger {
     await this.update()
     if (this.initialized) throw new Error(`did=${this.did} already initialized`)
     await this.append(header)
+  }
+
+  async getEntry(index){
+    const json = await this.core.get(index)
+    return JSON.parse(json)
+  }
+
+  async getEntries(){
+    await this.update()
+    const length = this.core.length
+    const entries = await Promise.all(
+      Array(length).fill().map((_, index) => this.getEntry(index))
+    )
+    return entries
+  }
+
+  applyEntry(value, entry){
+    return Object.assign({}, value, entry)
+  }
+
+  async getValue(){
+    const entries = await this.getEntries()
+    const value = {}
+    for (const entry of entries) this.applyEntry(value, entry, entries)
+    return value
   }
 }

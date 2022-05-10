@@ -77,14 +77,6 @@ export default class JlinxApp {
     return this.agent.resolveDid(did)
   }
 
-  // async createDid(){
-  //   await this.ready()
-  //   const { did, secret } = this.agent.createDid()
-  //   this.dids.add(did)
-  //   const value = {}
-  //   this.agent.updateDid(did, value)
-  // }
-
   async createDid(){
     const { did, secret } = await this.agent.createDid()
     debug({ did, secret })
