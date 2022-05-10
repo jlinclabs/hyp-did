@@ -71,7 +71,6 @@ async function create(opts){
 
 async function replicate(did, opts){
   await program.jlinx.replicateDid(did)
-  await program.jlinx.replicateDid(did)
 }
 
 

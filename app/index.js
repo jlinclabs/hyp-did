@@ -61,10 +61,10 @@ export default class JlinxApp {
     return this._ready
   }
 
-  destroy(){
+  async destroy(){
     debug('DESTROUOING KLIXN APP', this)
     // if (this.agent && this.agent.destroy)
-    this.agent.destroy()
+    if (this.agent) await this.agent.destroy()
   }
 
   async resolveDid(did){
@@ -73,6 +73,7 @@ export default class JlinxApp {
   }
 
   async createDid(){
+    await this.ready()
     const { did, secret } = await this.agent.createDid()
     await this.dids.track(did)
     debug({ did, secret })

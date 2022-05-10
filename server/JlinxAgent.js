@@ -60,11 +60,9 @@ export default class JlinxAgent {
     debug('resolveDid', { did, didDocument })
     await didDocument.ready()
     debug('resolveDid', { did, didDocument })
-    // const entries = await didDocument.getEntries()
     const value = await didDocument.getValue()
     debug('resolveDid', { did, value })
     return value
-    // if (!(await didDocument.exists())) return didDocument.value
   }
 
   async createDid(){

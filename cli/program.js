@@ -15,19 +15,12 @@ program
   .option('-r --remote <host>', 'jlinx remote server')
 
 program.hook('preAction', async () => {
-  program.debug('program.opts()', program.opts())
-  const {
-    storage,
-    remote,
-  } = program.opts()
+  const { storage, remote } = program.opts()
   program.debug('OPTIONS', { storage, remote })
   program.jlinx = new JlinxApp({
     storagePath: storage,
     remote,
   })
-  await program.jlinx.ready()
-  program.debug('jlinx', program.jlinx)
-  program.debug('jlinx.config', program.jlinx.config)
 })
 program.hook('postAction', async () => {
   program.debug('shutting down…')
@@ -35,35 +28,3 @@ program.hook('postAction', async () => {
 })
 
 export default program
-
-// class JlinxCli {
-//   constructor(opts){
-
-
-//     this.keys = new KeyStore({
-//       storagePath: Path.join(storage, 'keys')
-//     })
-
-//     this.dids = new DidTracker({
-//       storagePath: Path.join(storage, 'dids')
-//     })
-
-//     const servers = []
-
-//     servers.push(new JlinxServer()) // local
-//     servers.push(new RemoteProxy()) //
-
-//     this.client = new JlinxClient({
-//       // storagePath: opts.storage,
-//       // server: opts.host
-//       //   ? new JlincHttpClient({ host: opts.host })
-//       //   : new jlinxServer({
-//       //     storagePath: opts.storage,
-//       //   })
-//       servers,
-//     })
-
-//   }
-
-
-// }
