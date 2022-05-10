@@ -30,7 +30,6 @@
     "debug": "^4.3.4",
     "jlinx-app": "file:../app",
     "jlinx-core": "file:../core",
-    "node-fetch": "^3.2.4",
     "subcommand": "^2.1.1"
   }
 }

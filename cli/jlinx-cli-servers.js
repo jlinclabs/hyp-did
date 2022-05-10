@@ -22,18 +22,18 @@ program.parseAsync(process.argv)
 
 async function list(opts){
   const { jlinx } = program
-  const servers = await jlinx.getServers()
+  const servers = await jlinx.config.getServers()
   console.log(`you have ${servers.length} servers`)
   for (const server of servers)
     console.log(server.host, '-', server.publicKey)
 }
 
-async function add(host, opts){
-  const { jlinx } = program
-  await jlinx.addServer({ host })
+async function add(host){
+  await program.jlinx.config.addServer({ host })
   console.log(`added jlinx remote server: ${host}`)
 }
 
-async function remove(opts){
-
+async function remove(host){
+  await program.jlinx.config.removeServer(host)
+  console.log(`removed jlinx remote server: ${host}`)
 }

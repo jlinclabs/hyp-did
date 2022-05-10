@@ -14,18 +14,24 @@ program
 
 program
   .command('create')
-  .option('-H, --host <host>', 'the server to host the did', 'localhost')
+  // .option('-H, --host <host>', 'the server to host the did', 'localhost')
   .option('-k --keys <keys>', 'a comma separated list of keys to include in the did document')
+  .option('-R --replicate', 'replicate new did on remote did servers')
   .action(create)
 
 program
-  .argument('<did>', 'the did to track')
+  .command('replicate')
+  .argument('<did>', 'the did to replicate')
+  .action(replicate)
+
+program
   .command('track')
+  .argument('<did>', 'the did to track')
   .action(track)
 
 program
+.command('untrack')
   .argument('<did>', 'the did to track')
-  .command('untrack')
   .action(untrack)
 
 program.parseAsync(process.argv)
@@ -53,12 +59,22 @@ async function list(opts){
 }
 
 async function create(opts){
+  program.debug('CREATE OPTS', opts)
   const { jlinx } = program
   const didDocument = await jlinx.createDid()
+  const did = didDocument.id
   // await didDocument.update()
   // console.log(`created did ${didDocument}`)
   console.log(didDocument)
+  if (opts.replicate){
+    await jlinx.replicateDid(did)
+  }
 }
+
+async function replicate(did, opts){
+  await program.jlinx.replicateDid(did)
+}
+
 
 async function track(did, opts){
   const { jlinx } = program
@@ -69,6 +85,10 @@ async function track(did, opts){
 
 async function untrack(did, opts){
   const { jlinx } = program
-  await jlinx.dids.delete(did)
-  console.log(`stopped tracking ${did}`)
+  if (await jlinx.dids.has(did)){
+    await jlinx.dids.delete(did)
+    console.log(`stopped tracking ${did}`)
+  }else{
+    console.log(`wasn't tracking ${did}`)
+  }
 }

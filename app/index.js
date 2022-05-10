@@ -1,7 +1,9 @@
 import Debug from 'debug'
 import Path from 'path'
 import fs from 'fs/promises'
+import { URL } from 'node:url'
 
+import fetch from 'node-fetch'
 // import JlinxClient from 'jlinx-client'
 // import JlinxServer from 'jlinx-server'
 import KeyStore from 'jlinx-core/KeyStore.js'
@@ -54,6 +56,7 @@ export default class JlinxApp {
           dids: this.dids,
         })
 
+      await this.agent.ready()
     })()
     return this._ready
   }
@@ -62,18 +65,6 @@ export default class JlinxApp {
     debug('DESTROUOING KLIXN APP', this)
     // if (this.agent && this.agent.destroy)
     this.agent.destroy()
-  }
-
-  async getServers(){
-    const { servers } = await this.config.read()
-    return servers || []
-  }
-
-  async addServer(server){
-    if (!server.host) throw new Error(`host is required`)
-    const servers = await this.getServers()
-    servers.push(server)
-    await this.config.patch({ servers })
   }
 
   async resolveDid(did){
@@ -99,8 +90,37 @@ export default class JlinxApp {
     // return value
   }
 
+  async replicateDid(did){
+    await this.ready()
+    const servers = await this.config.getServers()
+    if (servers.length === 0)
+      throw new Error(`unable to replicate. no servers listed in config ${this.config.path}`)
+    await Promise.all(
+      servers.map(server => replicateDid(did, server))
+    )
+  }
 }
 
+
+async function replicateDid(did, server){
+  const url = `${server.host}/${did}`
+  debug(`replicating did=${did} at ${server.host}`)
+  debug(`GET ${url}`)
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+  debug({ response })
+  if (!response.ok){
+    debug('replication failed', url)
+    return false
+  }
+  const didDocument = await response.json()
+  debug('replication successful', didDocument)
+  return didDocument
+}
 
 
 
@@ -186,13 +206,29 @@ class Config {
       ...patch,
     })
   }
-  // get value(){
-  //   if (!this.value) throw new Error('config not ready yet')
-  //   return this.value
-  // }
 
-  // get uuid(){ this.value.uuid }
+  async getServers(){
+    const { servers } = await this.read()
+    return servers || []
+  }
 
-  // get servers(){ this.value.servers || [] }
+  async setServers(servers){
+    await this.patch({ servers })
+  }
+
+  async addServer(server){
+    if (!server.host) throw new Error(`host is required`)
+    const servers = await this.getServers()
+    await this.setServers([...servers, server])
+  }
+
+  async removeServer(host){
+    if (!host) throw new Error(`host is required`)
+    const servers = await this.getServers()
+    await this.setServers(
+      servers.filter(server => server.host !== host)
+    )
+  }
+
 }
 

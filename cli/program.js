@@ -6,30 +6,31 @@ import os from 'os'
 import { program } from 'commander'
 import JlinxApp from 'jlinx-app'
 
-const debug = Debug('jlinx:cli')
-
 const defaultStoragePath = Path.join(os.homedir(), '.jlinx')
+
+program.debug = Debug('jlinx:cli')
 
 program
   .option('-s --storage <path>', 'path to the jlinx directory', defaultStoragePath)
   .option('-r --remote <host>', 'jlinx remote server')
 
 program.hook('preAction', async () => {
+  program.debug('program.opts()', program.opts())
   const {
     storage,
     remote,
   } = program.opts()
-  debug('OPTIONS', { storage, remote })
+  program.debug('OPTIONS', { storage, remote })
   program.jlinx = new JlinxApp({
     storagePath: storage,
     remote,
   })
   await program.jlinx.ready()
-  debug('jlinx', program.jlinx)
-  debug('jlinx.config', program.jlinx.config)
+  program.debug('jlinx', program.jlinx)
+  program.debug('jlinx.config', program.jlinx.config)
 })
 program.hook('postAction', async () => {
-  debug('shutting down…')
+  program.debug('shutting down…')
   await program.jlinx.destroy()
 })
 

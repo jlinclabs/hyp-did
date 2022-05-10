@@ -43,16 +43,23 @@ export default class Filestore {
     return value
   }
 
+  _matchFilename(filename){ return true }
+
   async _get(filename){
     if (!this._matchFilename(filename)) return
     const path = this.path(filename)
+    let value
     try{
-      const value = await fs.readFile(path)
-      return this._deserialize(value)
+      value = await fs.readFile(path)
     }catch(error){
       if (error && error.code === 'ENOENT') return
       throw error
     }
+    return this._deserialize(value)
+  }
+
+  async get(did){
+    await this._get(did)
   }
 
   async _set(filename, value){
@@ -61,12 +68,23 @@ export default class Filestore {
     await fs.writeFile(path, this._serialize(value))
   }
 
-  async _delete(filename){
-    const path = this.path(filename)
-    await fs.unlink(path)
+  async set(did, value){
+    await this._set(did, value)
   }
 
-  _matchFilename(filename){ return true }
+  async _delete(filename){
+    const path = this.path(filename)
+    try{
+      await fs.unlink(path)
+    }catch(error){
+      if (error && error.code === 'ENOENT') return
+      throw error
+    }
+  }
+
+  async delete(did){
+    await this._delete(did)
+  }
 
   async keys(){
     let filenames
@@ -91,13 +109,6 @@ export default class Filestore {
     return all
   }
 
-  async get(did){
-    await this._get(did)
-  }
-
-  async set(did, value){
-    await this._set(did, value)
-  }
 
 }
 
@@ -154,3 +165,4 @@ class EncryptingKeyPair extends KeyPair {
   }
 
 }
+
