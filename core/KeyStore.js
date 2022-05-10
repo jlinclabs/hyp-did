@@ -6,7 +6,7 @@ import b4a from 'b4a'
 import Debug from 'debug'
 const debug = Debug('jlinx:keystore')
 
-import Filestore from './Filestore.js'
+import FileStore from './FileStore.js'
 
 import {
   isPublicKey,
@@ -25,7 +25,7 @@ import {
  * apple's keychain
  */
 
-export default class Keystore extends Filestore {
+export default class Keystore extends FileStore {
 
   _matchFilename(filename){ return isPublicKey(filename) }
 

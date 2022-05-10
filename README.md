@@ -6,8 +6,36 @@ using the
 
 [SPEC](./SPEC.md)
 
+## todo
+
+- `jlinx dids create`
+- `jlinx dids list`
+- `jlinx keys list`
 
 ```
+
+
+Jlinx Agent
+  has one of everything and can do everything
+  can use other agents as proxy??
+  each action (createDid, resolveDid, updateDid) either 
+    A) uses hypercore directly
+    B) uses a remote agent over the wire (http)
+  the agent id is its public key
+
+
+if agents can call upon other agents to host documents for them…
+
+
+Jinx App
+  |- KeyStore
+    |- filesystem
+  |- DidTracker
+    |- filesystem
+  |- Jlinx DID Client
+    |- actions: resolve did, create did, update did
+      |- Jlinx Server || Jlinx Server HTTP Proxy
+  
 
 CLI
   |_ JlinxApp

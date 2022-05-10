@@ -6,17 +6,10 @@ import JlinxClient from 'jlinx-client'
 program
   .option('-s --storage <path>', 'path to the jlinx directory', JlinxClient.defaultStoragePath)
 
-async function beforeEach(opts){
-  const jlinx = new JlinxClient({
-    storagePath: program.opts().storage,
-  })
-  await jlinx.ready()
-  return { jlinx }
-}
-
 program.action(async (opts) => {
-  const { jlinx } = await beforeEach(opts)
+  const jlinx = await makeClient(opts)
 })
+
 
 
 program
