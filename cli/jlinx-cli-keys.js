@@ -4,7 +4,7 @@ import program from './program.js'
 
 program
   .command('list')
-  .option('-s --storage <path>')
+  // .option('-s --storage <path>')
   .action(list)
 
 program

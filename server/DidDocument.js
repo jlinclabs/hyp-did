@@ -1,10 +1,6 @@
 
 
-import {
-  didToKey,
-  keyToString,
-  keyToMultibase,
-} from './util.js'
+import { didToKey, keyToString, keyToMultibase } from 'jlinx-core/util.js'
 
 export default class DidDocument {
 

@@ -6,11 +6,59 @@ using the
 
 [SPEC](./SPEC.md)
 
+
+
+
 ## todo
 
-- `jlinx dids create`
-- `jlinx dids list`
+
+### App Actions
+
 - `jlinx keys list`
+  - read local filesystem
+- `jlinx keys create`
+  - write keys to filesystem
+- `jlinx dids resolve`
+  - options:
+    - read from hyperswarm directly
+    - N remote servers (http get)
+  - options AKA:
+    - read from local hyperswarm client
+    - read from remote jlinx servers
+- `jlinx dids create`
+  - write keys to filesystem
+  - write did to filesystem
+  - ask remote servers to sync (optional)
+- `jlinx dids list`
+  - read local filesystem
+
+
+### JlinxHypercoreClient
+
+- create did
+- resolve did
+- update did
+
+### JlinxHttpServer
+
+wraps `JlinxHypercoreClient` in http
+
+- create did `POST /dids/new`
+- resolve did `GET /did:*`
+- update did `POST /did:jlinx:xxxxxxx` {}
+
+### JlinxHttpClient
+
+uses `JlinxHttpServer` as a proxy to `JlinxHypercoreClient`
+
+- create did
+- resolve did
+- update did
+
+### JlinxApp
+
+- uses one local `JlinxHypercoreClient` and N instances of `JlinxHttpClient` for remove servers
+- 
 
 ```
 

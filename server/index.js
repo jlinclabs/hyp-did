@@ -1,4 +1,4 @@
-import { createSigningKeyPair, keyToBuffer, keyToDid, didToKey } from './util.js'
+import { createSigningKeyPair, keyToBuffer, keyToDid, didToKey } from 'jlinx-core/util.js'
 import HypercoreClient from './HypercoreClient.js'
 import DidDocument from './DidDocument.js'
 

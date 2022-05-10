@@ -75,21 +75,6 @@ export default class JlinxClient {
       indent + ')'
   }
 
-  ready(){
-    if (!this._ready) this._ready = (async () => {
-      debug(`config: ${this.storagePath}`)
-      if (!(await fsExists(this.storagePath))) await fs.mkdir(this.storagePath)
-      try{
-        this.config = await readConfig(this.configPath)
-      }catch(error){
-        if (error.code === 'ENOENT')
-          this.config = await initConfig(this.configPath)
-        else throw error
-      }
-    })()
-    return this._ready
-  }
-
   async resolveDid(did){
     // await this.ready()
 
@@ -123,21 +108,7 @@ export default class JlinxClient {
   }
 }
 
-async function readConfig(path){
-  debug('reading config at', path)
-  const source = await fs.readFile(path, 'utf-8')
-  return ini.parse(source)
-}
 
-async function initConfig(path){
-  debug('initializing config at', path)
-  const config = {
-    uuid: keyToString(createSigningKeyPair().publicKey),
-  }
-  debug('writing config', config)
-  await fs.writeFile(path, ini.stringify(config))
-  return config
-}
 
 
 function generateDidDocument(opts){

@@ -3,8 +3,8 @@ import Corestore from 'corestore'
 import Hyperswarm from 'hyperswarm'
 import crypto from 'hypercore-crypto'
 import dht from '@hyperswarm/dht'
-import { keyToString, keyToBuffer, keyToDid } from './util.js'
-import topic from './topic.js'
+import { keyToString, keyToBuffer, keyToDid } from 'jlinx-core/util.js'
+import topic from 'jlinx-core/topic.js'
 
 export default class HypercoreClient {
   constructor(options = {}){

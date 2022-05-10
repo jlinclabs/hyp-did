@@ -28,7 +28,8 @@
     "chalk": "^5.0.1",
     "commander": "^9.2.0",
     "debug": "^4.3.4",
-    "jlinx-client": "file:../client",
+    "jlinx-app": "file:../app",
+    "jlinx-core": "file:../core",
     "node-fetch": "^3.2.4",
     "subcommand": "^2.1.1"
   }
