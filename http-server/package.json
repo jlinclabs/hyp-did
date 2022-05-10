@@ -32,6 +32,6 @@
     "express-hbs": "^2.4.0",
     "express-promise-router": "^4.1.1",
     "jlinx-core": "file:../core",
-    "jlinx-server": "file:../server"
+    "jlinx-app": "file:../app"
   }
 }

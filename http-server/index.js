@@ -1,3 +1,4 @@
+import Debug from 'debug'
 import Path from 'path'
 import { fileURLToPath } from 'url'
 import express from 'express'
@@ -6,27 +7,34 @@ import hbs from 'express-hbs'
 import bodyParser from 'body-parser'
 
 import { isJlinxDid } from 'jlinx-core/util.js'
-import KeyStore from 'jlinx-core/KeyStore.js'
-import DidStore from 'jlinx-core/DidStore.js'
-import JlinxAgent from 'jlinx-server/JlinxAgent.js'
+import JlinxApp from 'jlinx-app'
+// import KeyStore from 'jlinx-core/KeyStore.js'
+
+const debug = Debug('jlinx:http-server')
+
+// import DidStore from 'jlinx-core/DidStore.js'
+// import JlinxAgent from 'jlinx-server/JlinxAgent.js'
 
 const __dirname = Path.resolve(fileURLToPath(import.meta.url), '..')
 
 export default function createHypDidHttpServer(opts){
-  for (const prop of 'port storagePath agentPublicKey'.split(' '))
-    if (!opts[prop]) throw new Error(`jlinx-http-server requires ${prop}`)
+  debug(opts)
   const app = express()
   app.port = opts.port
   app.start = async function start(){
-    app.storagePath = opts.storagePath
-    app.keys = new KeyStore(Path.join(app.storagePath, 'keys'))
-    app.dids = new DidStore(Path.join(app.storagePath, 'dids'))
-    app.agent = new JlinxAgent({
-      publicKey: opts.agentPublicKey,
-      storagePath: app.storagePath,
-      keys: app.keys,
-      dids: app.dids,
+    debug('starting')
+    app.jlinx = new JlinxApp({
+      storagePath: opts.jlinxStoragePath,
     })
+    // app.storagePath = opts.storagePath
+    // app.keys = new KeyStore(Path.join(app.storagePath, 'keys'))
+    // app.dids = new DidStore(Path.join(app.storagePath, 'dids'))
+    // app.jlinx = new JlinxAgent({
+    //   publicKey: opts.agentPublicKey,
+    //   storagePath: app.storagePath,
+    //   keys: app.keys,
+    //   dids: app.dids,
+    // })
 
     const start = () =>
       new Promise((resolve, reject) => {
@@ -39,13 +47,13 @@ export default function createHypDidHttpServer(opts){
       })
 
     await Promise.all([
-      app.agent.ready(),
+      app.jlinx.ready(),
       start(),
     ])
   }
 
   app.stop = async function stop() {
-    if (app.agent) promises.push(app.agent.destroy())
+    if (app.jlinx) promises.push(app.jlinx.destroy())
     if (app.server) promises.push(app.server.stop())
     await Promise.all(promises)
   }
@@ -87,8 +95,8 @@ export default function createHypDidHttpServer(opts){
     const did = req.params[0]
     if (!isJlinxDid(did)) return renderError(req, res, `invalid did DID=${did}`, 400)
     console.log('resolving', did)
-    await app.agent.ready()
-    const didDocument = await app.agent.resolveDid(did)
+    // await app.jlinx.ready()
+    const didDocument = await app.jlinx.resolveDid(did)
     if (!didDocument) return renderError(req, res, `unable to resolve DID=${did}`, 404)
     // console.log('updating', did)
     // if (!didDocument.loaded) await didDocument.update()

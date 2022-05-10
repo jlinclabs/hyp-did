@@ -4,8 +4,7 @@ import hypDidServer from '../index.js'
 
 const optionsSpec = {
   port: ['PORT'],
-  storagePath: ['JLINX_STORAGE'],
-  agentPublicKey: ['JLINX_AGENT_PUBLIC_KEY'],
+  jlinxStoragePath: ['JLINX_STORAGE'],
 }
 const options = {}
 for (const [option, [envVar]] of Object.entries(optionsSpec)){
@@ -16,9 +15,5 @@ for (const [option, [envVar]] of Object.entries(optionsSpec)){
 
 console.log(options)
 
-const server = hypDidServer({
-  port: process.env.PORT,
-  storagePath: process.env.JLINX_STORAGE,
-  agentPublicKey: process.env.JLINX_AGENT_PUBLIC_KEY,
-})
+const server = hypDidServer(options)
 server.start()

@@ -20,6 +20,7 @@ export default class HypercoreClient {
   }
 
   async connect(){
+    console.trace(`HypercoreClient#connect!`)
     if (this._ready) return
     this.swarm = new Hyperswarm({
       keyPair: this.keyPair,

@@ -32,7 +32,7 @@ export default class JlinxApp {
   constructor(opts = {}){
     this.storagePath = opts.storagePath
     if (!this.storagePath) throw new Error(`${this.constructor.name} requires 'storagePath'`)
-    this.remote = opts.remote
+    this.remote = opts.remote /// <--- ???? :/
     this.config = new Config(Path.join(this.storagePath, 'config.json'))
     this.keys = new KeyStore(Path.join(this.storagePath, 'keys'))
     this.dids = new DidStore(Path.join(this.storagePath, 'dids'))
@@ -54,6 +54,7 @@ export default class JlinxApp {
       if (await this.config.exists()){
         await this.config.read()
       }else{
+        debug('initializing jlinx storage at', this.config.path)
         const keyPair = await this.keys.createSigningKeyPair()
         await this.config.write({
           agentPublicKey: keyPair.publicKeyAsString,
@@ -109,6 +110,7 @@ export default class JlinxApp {
   async getDidReplicationUrls(did){
     await this.ready()
     const servers = await this.config.getServers()
+    debug('!!!!!!!!servers', servers)
     return servers.map(server => `${server.host}/${did}`)
   }
 
@@ -189,10 +191,11 @@ class Config {
   }
 
   async exists(){
-    await fsExists(this.path)
+    return await fsExists(this.path)
   }
 
   async read(){
+    console.trace()
     debug('reading config at', this.path)
     const source = await fs.readFile(this.path, 'utf-8')
     this.value = JSON.parse(source)

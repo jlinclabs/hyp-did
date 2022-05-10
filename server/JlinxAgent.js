@@ -11,6 +11,7 @@ const debug = Debug('jlinx:agent')
 export default class JlinxAgent {
 
   constructor(opts){
+    debug(this.constructor, opts)
     this.publicKey = opts.publicKey
     if (!this.publicKey) throw new Error(`${this.constructor.name} requires 'publicKey'`)
     this.storagePath = opts.storagePath
@@ -30,12 +31,17 @@ export default class JlinxAgent {
       indent + ')'
   }
 
-  async ready(){
-    this.hypercore = new HypercoreClient({
-      storagePath: Path.join(this.storagePath, 'cores'),
-      keyPair: await this.keys.get(this.publicKey),
-    })
-    await this.hypercore.ready()
+  ready(){
+    if (!this._ready) this._ready = (async () => {
+      const keyPair = await this.keys.get(this.publicKey)
+      if (!keyPair || !keyPair.secretKey)
+        throw new Error(`unable to get agents secret key for ${this.publicKey}`)
+      this.hypercore = new HypercoreClient({
+        storagePath: Path.join(this.storagePath, 'cores'),
+        keyPair: await this.keys.get(this.publicKey),
+      })
+      await this.hypercore.ready()
+    })()
   }
 
   async destroy(){
