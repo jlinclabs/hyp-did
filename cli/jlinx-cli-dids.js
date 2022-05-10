@@ -66,12 +66,11 @@ async function create(opts){
   // await didDocument.update()
   // console.log(`created did ${didDocument}`)
   console.log(didDocument)
-  if (opts.replicate){
-    await jlinx.replicateDid(did)
-  }
+  if (opts.replicate) await replicate(did, {})
 }
 
 async function replicate(did, opts){
+  await program.jlinx.replicateDid(did)
   await program.jlinx.replicateDid(did)
 }
 

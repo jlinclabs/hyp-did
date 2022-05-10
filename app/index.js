@@ -90,21 +90,26 @@ export default class JlinxApp {
     // return value
   }
 
-  async replicateDid(did){
+  async getDidReplicationUrls(did){
     await this.ready()
     const servers = await this.config.getServers()
+    return servers.map(server => `${server.host}/${did}`)
+  }
+
+  async replicateDid(did){
+    const servers = await this.getDidReplicationUrls(did)
     if (servers.length === 0)
       throw new Error(`unable to replicate. no servers listed in config ${this.config.path}`)
     await Promise.all(
-      servers.map(server => replicateDid(did, server))
+      servers.map(url => replicateDid(did, url))
     )
   }
 }
 
 
-async function replicateDid(did, server){
-  const url = `${server.host}/${did}`
-  debug(`replicating did=${did} at ${server.host}`)
+async function replicateDid(did, url){
+  // const url = `${server.host}/${did}`
+  debug(`replicating did=${did} at ${url}`)
   debug(`GET ${url}`)
   const response = await fetch(url, {
     method: 'GET',
