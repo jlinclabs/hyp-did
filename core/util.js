@@ -29,6 +29,12 @@ export const keyToMultibase = key =>
 export const didToKey = did =>
   DID_JLINX_REGEXP.test(did) && RegExp.$1
 
+export function createRandomString(size = 12){
+  const random = Buffer.allocUnsafe(size)
+  sodium.randombytes_buf(random)
+  return random.toString('hex')
+}
+
 export function createSigningKeyPair(seed){
   const publicKey = b4a.allocUnsafe(sodium.crypto_sign_PUBLICKEYBYTES)
   const secretKey = b4a.allocUnsafe(sodium.crypto_sign_SECRETKEYBYTES)

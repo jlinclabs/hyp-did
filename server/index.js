@@ -2,7 +2,8 @@ import { createSigningKeyPair, keyToBuffer, keyToDid, didToKey } from 'jlinx-cor
 import HypercoreClient from './HypercoreClient.js'
 import DidDocument from './DidDocument.js'
 
-// AKAK LocalJlinxServer
+// AKA LocalJlinxServer
+// AKA JlinxHypercoreClient
 export default class JlinxServer {
 
   constructor(opts){

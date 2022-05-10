@@ -62,7 +62,7 @@ export default class HypercoreClient {
   }
 
   async destroy(){
-    // console.log('[Hyperlinc] destroying!')
+    console.log('[Hyperlinc] destroying!')
     if (this.swarm){
       console.log('[Hyperlinc] disconnecting from swarm')
       console.log('[Hyperlinc] connections.size', this.swarm.connections.size)

@@ -1,61 +1,74 @@
 #!/usr/bin/env node
 
-import { program } from 'commander'
-import JlinxClient from 'jlinx-client'
-
-program
-  .option('-s --storage <path>', 'path to the jlinx directory', JlinxClient.defaultStoragePath)
-
-program.action(async (opts) => {
-  const jlinx = await makeClient(opts)
-})
-
-
+import program from './program.js'
+import { didToKey } from 'jlinx-core/util.js'
 
 program
   .command('resolve')
-  .argument('<did>', 'the did to')
-  // .option('--', 'the did to resolve')
+  .argument('<did>', 'the did to resolve')
   .action(resolve)
 
 program
   .command('list')
-  // .argument('<did>', 'the did to')
-  // .option('--', 'the did to resolve')
   .action(list)
 
 program
   .command('create')
-  // .argument('<did>', 'the did to')
   .option('-H, --host <host>', 'the server to host the did', 'localhost')
   .option('-k --keys <keys>', 'a comma separated list of keys to include in the did document')
   .action(create)
 
+program
+  .argument('<did>', 'the did to track')
+  .command('track')
+  .action(track)
+
+program
+  .argument('<did>', 'the did to track')
+  .command('untrack')
+  .action(untrack)
+
 program.parseAsync(process.argv)
 
 async function resolve(did, opts){
-  const { jlinx } = await beforeEach(opts)
+  const { jlinx } = program
   const didDocument = await jlinx.resolveDid(did)
-  if (!didDocument){
+  if (didDocument){
+    console.log(didDocument)
+  }else{
     console.error(`unable to resolve`)
-    return
   }
-  await didDocument.update()
-  console.log(didDocument.value)
+  // await didDocument.update()
+  // console.log(didDocument.value)
 }
 
 async function list(opts){
-  const { jlinx } = await beforeEach(opts)
-  const didDocuments = await jlinx.didstore.all()
-  console.log(`you have ${didDocuments.length} did documents`)
-  for (const didDocument of didDocuments)
-    console.log(didDocument.did, didDocument.writable ? '' : '(readonly)')
+  const { jlinx } = program
+  const dids = await jlinx.dids.all()
+  console.log(`you have ${dids.length} did documents`)
+  for (const did of dids){
+    const writable = jlinx.keys.has(didToKey(did))
+    console.log(did, writable ? '' : '(readonly)')
+  }
 }
 
 async function create(opts){
-  const { jlinx } = await beforeEach(opts)
+  const { jlinx } = program
   const didDocument = await jlinx.createDid()
   // await didDocument.update()
   // console.log(`created did ${didDocument}`)
   console.log(didDocument)
+}
+
+async function track(did, opts){
+  const { jlinx } = program
+  const didDocument = await jlinx.resolveDid(did)
+  const dids = await jlinx.dids.set(did)
+  console.log(`tracking ${did}`)
+}
+
+async function untrack(did, opts){
+  const { jlinx } = program
+  await jlinx.dids.delete(did)
+  console.log(`stopped tracking ${did}`)
 }

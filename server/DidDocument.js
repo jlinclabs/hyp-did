@@ -4,12 +4,10 @@ import { didToKey, keyToString, keyToMultibase } from 'jlinx-core/util.js'
 
 export default class DidDocument {
 
-  constructor(did, opts){
-    console.log('new DidDocument', did)
+  constructor(did, core){
     this.did = did
-    this.server = opts.server
-    // this.publicKey = didToKey(did)
-    // this.core = core
+    this.publicKey = didToKey(did)
+    this.core = core
   }
 
   [Symbol.for('nodejs.util.inspect.custom')](depth, opts){

@@ -12,7 +12,7 @@ import { fsExists } from './util.js'
  */
 
 export default class Filestore {
-  constructor({ storagePath }){
+  constructor(storagePath){
     this.storagePath = storagePath
   }
 
@@ -35,16 +35,35 @@ export default class Filestore {
     return this._matchFilename(filename) && await fsExists(this.path(filename))
   }
 
+  _serialize(value){
+    return value
+  }
+
+  _deserialize(value){
+    return value
+  }
+
   async _get(filename){
     if (!this._matchFilename(filename)) return
     const path = this.path(filename)
-    return await fs.readFile(path) // TODO handle missing dir error here
+    try{
+      const value = await fs.readFile(path)
+      return this._deserialize(value)
+    }catch(error){
+      if (error && error.code === 'ENOENT') return
+      throw error
+    }
   }
 
   async _set(filename, value){
     const path = this.path(filename)
     await fs.mkdir(this.storagePath).catch(safetyCatch)
-    await fs.writeFile(path, value)
+    await fs.writeFile(path, this._serialize(value))
+  }
+
+  async _delete(filename){
+    const path = this.path(filename)
+    await fs.unlink(path)
   }
 
   _matchFilename(filename){ return true }
@@ -71,6 +90,15 @@ export default class Filestore {
     )
     return all
   }
+
+  async get(did){
+    await this._get(did)
+  }
+
+  async set(did, value){
+    await this._set(did, value)
+  }
+
 }
 
 class KeyPair {

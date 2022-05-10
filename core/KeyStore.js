@@ -29,18 +29,6 @@ export default class Keystore extends FileStore {
 
   _matchFilename(filename){ return isPublicKey(filename) }
 
-  async get(publicKey){
-    const secretKey = await this._get(publicKey)
-    const keypair = (
-      secretKey.length === 32
-        ? new EncryptingKeyPair({ publicKey, secretKey }) :
-      secretKey.length === 64
-        ? new SigningKeyPair({ publicKey, secretKey }) :
-      undefined
-    )
-    if (keypair && keypair.valid) return keypair
-  }
-
   async set(keyPair){
     // TODO validate keypair
     // TODO prevent overwriting
@@ -63,6 +51,23 @@ export default class Keystore extends FileStore {
     await this.set(keyPair)
     debug('created new key pair', keyPair)
     return keyPair
+  }
+
+  async get(publicKey){
+    const secretKey = await this._get(publicKey)
+    if (!secretKey) return
+    const keypair = (
+      secretKey.length === 32
+        ? new EncryptingKeyPair({ publicKey, secretKey }) :
+      secretKey.length === 64
+        ? new SigningKeyPair({ publicKey, secretKey }) :
+      undefined
+    )
+    if (keypair && keypair.valid) return keypair
+  }
+
+  async getSecretKey(publicKey){
+
   }
 }
 
