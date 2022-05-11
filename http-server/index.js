@@ -26,15 +26,6 @@ export default function createHypDidHttpServer(opts){
     app.jlinx = new JlinxApp({
       storagePath: opts.jlinxStoragePath,
     })
-    // app.storagePath = opts.storagePath
-    // app.keys = new KeyStore(Path.join(app.storagePath, 'keys'))
-    // app.dids = new DidStore(Path.join(app.storagePath, 'dids'))
-    // app.jlinx = new JlinxAgent({
-    //   publicKey: opts.agentPublicKey,
-    //   storagePath: app.storagePath,
-    //   keys: app.keys,
-    //   dids: app.dids,
-    // })
 
     const start = () =>
       new Promise((resolve, reject) => {
@@ -94,14 +85,8 @@ export default function createHypDidHttpServer(opts){
   app.routes.get(/^\/(did:.+)$/, async (req, res, next) => {
     const did = req.params[0]
     if (!isJlinxDid(did)) return renderError(req, res, `invalid did DID=${did}`, 400)
-    console.log('resolving', did)
-    // await app.jlinx.ready()
     const didDocument = await app.jlinx.resolveDid(did)
-    console.log('resolved', didDocument)
     if (!didDocument) return renderError(req, res, `unable to resolve DID=${did}`, 404)
-    // console.log('updating', did)
-    // if (!didDocument.loaded) await didDocument.update()
-    // console.log('resolved', didDocument.value)
     if (req.accepts('html'))
       return res.render('did', {
         did, json: JSON.stringify(didDocument, null, 2)

@@ -1,7 +1,6 @@
 import Debug from 'debug'
 import Path from 'path'
 import fs from 'fs/promises'
-import { URL } from 'node:url'
 
 import fetch from 'node-fetch'
 // import JlinxClient from 'jlinx-client'
@@ -17,6 +16,8 @@ import {
 
 import JlinxRemoteAgent from 'jlinx-server/JlinxRemoteAgent.js'
 import JlinxAgent from 'jlinx-server/JlinxAgent.js'
+import Config from './Config.js'
+import generateDidDocument from './generateDidDocument.js'
 
 const debug = Debug('jlinx:app')
 
@@ -99,9 +100,7 @@ export default class JlinxApp {
     const signingKeyPair = await this.keys.createSigningKeyPair()
     const encryptingKeyPair = await this.keys.createEncryptingKeyPair()
     const value = generateDidDocument({
-      did,
-      signingPublicKey: signingKeyPair.publicKey,
-      encryptingPublicKey: encryptingKeyPair.publicKey,
+      did, signingKeyPair, encryptingKeyPair,
     })
     debug(`updating did=${did}`, value)
     await this.agent.amendDid({did, secret, value})
@@ -162,104 +161,3 @@ async function replicateDid(did, url){
     if (didDocument) return didDocument
   }
 }
-
-
-
-
-
-function generateDidDocument(opts){
-  const {
-    did,
-    signingPublicKey,
-    encryptingPublicKey,
-  } = opts
-
-  // TODO https://www.w3.org/TR/did-core/#did-document-metadata
-
-  return {
-    '@context': 'FAKE FOR NOW',
-    id: did,
-    created:  new Date().toISOString(),
-    verificationMethod: [
-      {
-        id: `${did}#signing`,
-        type: 'Ed25519VerificationKey2020',
-        controller: did,
-        publicKeyMultibase: keyToMultibase(signingPublicKey),
-      },
-    ],
-    "keyAgreement": [
-      {
-        id: `${did}#encrypting`,
-        type: 'X25519KeyAgreementKey2019',
-        controller: did,
-        publicKeyMultibase: keyToMultibase(encryptingPublicKey),
-      },
-    ],
-    "authentication": [
-      `${did}#signing`,
-    ],
-  }
-}
-
-
-class Config {
-  constructor(path, init){
-    this.path = path
-    this.init = init
-  }
-
-  async exists(){
-    return await fsExists(this.path)
-  }
-
-  async read(){
-    debug('reading config at', this.path)
-    try{
-      const source = await fs.readFile(this.path, 'utf-8')
-      this.value = JSON.parse(source)
-    }catch(error){
-      if (error.code === 'ENOENT') await this.write(await this.init())
-      else throw error
-    }
-    return this.value
-  }
-
-  async write(newValue){
-    await fs.writeFile(this.path, JSON.stringify(newValue, null, 2))
-    return this.value = newValue
-  }
-
-  async patch(patch){
-    await this.read()
-    await this.write({
-      ...this.value,
-      ...patch,
-    })
-  }
-
-  async getServers(){
-    const { servers } = await this.read()
-    return servers || []
-  }
-
-  async setServers(servers){
-    await this.patch({ servers })
-  }
-
-  async addServer(server){
-    if (!server.host) throw new Error(`host is required`)
-    const servers = await this.getServers()
-    await this.setServers([...servers, server])
-  }
-
-  async removeServer(host){
-    if (!host) throw new Error(`host is required`)
-    const servers = await this.getServers()
-    await this.setServers(
-      servers.filter(server => server.host !== host)
-    )
-  }
-
-}
-
