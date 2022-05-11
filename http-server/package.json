@@ -1,16 +1,12 @@
 {
-  "name": "jlinx-server",
+  "name": "jlinx-http-server",
   "type": "module",
   "version": "1.0.0",
   "description": "http server for working with DIDs on Hypercore",
   "main": "index.js",
   "scripts": {
     "start": "./scripts/start.js",
-    "dev:start": "nodemon -w ../ --signal SIGTERM --exec ./scripts/start.js",
-    "test": "./scripts/test"
-  },
-  "bin": {
-    "jlinx-server": "./jlinx-server-cli.js"
+    "dev:start": "nodemon -w ../ --signal SIGTERM --exec ./scripts/start.js"
   },
   "repository": {
     "type": "git",
@@ -28,10 +24,11 @@
   "homepage": "https://github.com/jlinclabs/jlinx#readme",
   "dependencies": {
     "commander": "^9.2.0",
+    "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-hbs": "^2.4.0",
     "express-promise-router": "^4.1.1",
-    "jlinx-core": "file:../core",
-    "jlinx-app": "file:../app"
+    "jlinx-app": "file:../app",
+    "jlinx-core": "file:../core"
   }
 }
