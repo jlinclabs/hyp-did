@@ -84,7 +84,7 @@ export default function createHypDidHttpServer(opts){
 
   app.routes.use(/^\/(did:.+)$/, async (req, res, next) => {
     req.did = req.params[0]
-    if (!isJlinxDid(did))
+    if (!isJlinxDid(req.did))
       renderError(req, res, `invalid did DID=${req.did}`, 400)
     else
       next()

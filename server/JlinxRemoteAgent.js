@@ -66,11 +66,11 @@ export default class JlinxRemoteAgent {
   }
 
   async getJSON(path){
-    return fetch(path, { method: 'get' })
+    return this.fetch(path, { method: 'get' })
   }
 
   async postJSON(path, body){
-    return fetch(path, {
+    return this.fetch(path, {
       method: 'post',
       body: JSON.stringify(body),
       headers: {'Content-Type': 'application/json'}

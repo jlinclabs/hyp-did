@@ -104,8 +104,9 @@ export default class JlinxApp {
     })
     debug(`updating did=${did}`, value)
     await this.agent.amendDid({did, secret, value})
-    return await this.agent.resolveDid(did)
-    // return value
+    // return await this.agent.resolveDid(did)
+    await this.agent.resolveDid(did)
+    return value
   }
 
   async getDidReplicationUrls(did){
