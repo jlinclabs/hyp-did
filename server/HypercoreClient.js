@@ -106,19 +106,23 @@ export default class HypercoreClient {
   }
 
   async status(){
-    const keys = [...this.corestore.cores.keys()]
-    return {
-      numberOfPeers: this.swarm.peers.size,
-      connected: this.swarm.peers.size > 0,
-      numberOfCores: this.corestore.cores.size,
-      cores: keys.map(key => {
+    const status = {}
+    status.numberOfCores = this.corestore.cores.size
+    if (this.swarm){
+      if (this.swarm.peers){
+        status.numberOfPeers = this.swarm.peers.size
+        status.connected = this.swarm.peers.size > 0
+      }
+      const keys = [...this.corestore.cores.keys()]
+      status.cores = keys.map(key => {
         const core = this.corestore.cores.get(key)
         return {
           key: keyToString(core.key),
           length: core.length,
         }
-      }),
+      })
     }
+    return status
   }
 
   async getCore(key, secretKey){

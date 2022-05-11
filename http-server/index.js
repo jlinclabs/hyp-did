@@ -47,7 +47,7 @@ export default function createHypDidHttpServer(opts){
       })
 
     await Promise.all([
-      app.jlinx.ready(),
+      app.jlinx.connected(),
       start(),
     ])
   }
@@ -97,6 +97,7 @@ export default function createHypDidHttpServer(opts){
     console.log('resolving', did)
     // await app.jlinx.ready()
     const didDocument = await app.jlinx.resolveDid(did)
+    console.log('resolved', didDocument)
     if (!didDocument) return renderError(req, res, `unable to resolve DID=${did}`, 404)
     // console.log('updating', did)
     // if (!didDocument.loaded) await didDocument.update()
@@ -106,6 +107,13 @@ export default function createHypDidHttpServer(opts){
         did, json: JSON.stringify(didDocument, null, 2)
       })
     return res.json(didDocument)
+  })
+
+  app.routes.get('/status', async (req, res, next) => {
+    const status = await app.jlinx.agent.hypercore.status()
+    res.json({
+      hypercore: status,
+    })
   })
 
   return app

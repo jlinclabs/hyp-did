@@ -74,6 +74,11 @@ export default class JlinxApp {
     return this._ready
   }
 
+  async connected(){
+    await this.ready()
+    await this.agent.connected()
+  }
+
   async destroy(){
     debug('DESTROUOING KLIXN APP', this)
     // if (this.agent && this.agent.destroy)
@@ -123,7 +128,7 @@ export default class JlinxApp {
     const results = await Promise.all(
       servers.map(url => replicateDid(did, url))
     )
-    const successes = results.map(r => r && r.id === did)
+    // const successes = results.map(r => r && r.id === did)
     debug('replicateion results', results)
     // results.sortBy('created')[0]
     if (results.every(success => !success))
@@ -143,13 +148,17 @@ async function replicateDid(did, url){
         Accept: 'application/json'
       }
     })
+    debug('RESPONSE?', response)
+    debug('response.ok?', response.ok)
     const didDocument = response.ok ? await response.json() : null
+    debug('response.json()', didDocument)
     if (didDocument && didDocument.id === did) return didDocument
-    debug('replication failed', response)
+    debug('replication failed')
   }
   const start = Date.now()
   while (Date.now() - start < 20000){
     const didDocument = await attempt()
+    debug('wtf🐼', didDocument)
     if (didDocument) return didDocument
   }
 }
