@@ -58,45 +58,45 @@ export default class Ledger {
   }
 
   async append(...events){
-    // if (this.core.length === 0) // ensure entries[0] is a header record
     return await this.core.append(
-      events.map(event => {
-        return JSON.stringify({
+      events.map(event =>
+        JSON.stringify({
+          ...event,
           jlinxVersion: VERSION,
           at: new Date,
-          event,
         })
-      })
+      )
     )
   }
 
-
-  async initialize(details){
+  async initialize(header){
     await this.update()
     if (this.initialized) throw new Error(`did=${this.did} already initialized`)
-    await this.append({ type: 'init', ...details })
+    await this.append(header)
   }
 
   async setValue(changes){
-    await this.append({ type: 'amend', changes })
+    await this.append({ eventType: 'amend', changes })
   }
 
   async getEvent(index){
     const json = await this.core.get(index)
-    return JSON.parse(json).event
+    debug('event', { index, json })
+    return JSON.parse(json)
   }
 
   async getEvents(){
     await this.update()
-    const length = this.core.length
+    const length = this.core.length - 1 // -1 to skip header
     const entries = await Promise.all(
-      Array(length).fill().map((_, index) => this.getEvent(index))
+      Array(length).fill().map((_, index) => this.getEvent(index + 1))
     )
+    debug({ entries })
     return entries
   }
 
   applyEvent(value, event){
-    if (event && event.type === 'amend')
+    if (event && event.eventType === 'amend')
       return Object.assign({}, value, event.changes)
     else
       return value
@@ -104,6 +104,7 @@ export default class Ledger {
 
   async getValue(){
     const events = await this.getEvents()
+    debug({ events })
     if (events.length === 0) return
     let value = {}
     for (const entry of events)

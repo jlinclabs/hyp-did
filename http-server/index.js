@@ -82,9 +82,15 @@ export default function createHypDidHttpServer(opts){
     next()
   })
 
+  app.routes.use(/^\/(did:.+)$/, async (req, res, next) => {
+    req.did = req.params[0]
+    if (!isJlinxDid(did))
+      renderError(req, res, `invalid did DID=${req.did}`, 400)
+    else
+      next()
+  })
   app.routes.get(/^\/(did:.+)$/, async (req, res, next) => {
-    const did = req.params[0]
-    if (!isJlinxDid(did)) return renderError(req, res, `invalid did DID=${did}`, 400)
+    const { did } = req
     const didDocument = await app.jlinx.resolveDid(did)
     if (!didDocument) return renderError(req, res, `unable to resolve DID=${did}`, 404)
     if (req.accepts('html'))
@@ -99,6 +105,21 @@ export default function createHypDidHttpServer(opts){
     res.json({
       hypercore: status,
     })
+  })
+
+  app.routes.post('/new', async (req, res, next) => {
+    const { did, secret } = await app.jlinx.agent.createDid()
+    res.json({ did, secret })
+  })
+
+  app.routes.post(/^\/(did:.+)$/, async (req, res, next) => {
+    const { did } = req
+    const { secret, value } = req.body
+    debug('amending did')
+    await app.jlinx.agent.amendDid({
+      did, secret, value
+    })
+    res.json({})
   })
 
   return app
