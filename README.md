@@ -7,240 +7,37 @@ using the
 [SPEC](./SPEC.md)
 
 
+## node modules
 
 
-## todo
 
+### jlinx-core
 
-### App Actions
+https://github.com/jlinclabs/jlinx-core
 
-- `jlinx keys list`
-  - read local filesystem
-- `jlinx keys create`
-  - write keys to filesystem
-- `jlinx dids resolve`
-  - options:
-    - read from hyperswarm directly
-    - N remote servers (http get)
-  - options AKA:
-    - read from local hyperswarm client
-    - read from remote jlinx servers
-- `jlinx dids create`
-  - write keys to filesystem
-  - write did to filesystem
-  - ask remote servers to sync (optional)
-- `jlinx dids list`
-  - read local filesystem
 
+### jlinx-client
 
-### JlinxHypercoreClient
+https://github.com/jlinclabs/jlinx-client
 
-- create did
-- resolve did
-- amend did
 
-### JlinxHttpServer
+### jlinx-server
 
-wraps `JlinxHypercoreClient` in http
+https://github.com/jlinclabs/jlinx-server
 
-- create did `POST /dids/new`
-- resolve did `GET /did:*`
-- amend did `POST /did:jlinx:xxxxxxx` {}
 
-### JlinxHttpClient
+### jlinx-app
 
-uses `JlinxHttpServer` as a proxy to `JlinxHypercoreClient`
+https://github.com/jlinclabs/jlinx-app
 
-- create did
-- resolve did
-- amend did
 
-### JlinxApp
+### jlinx-cli
 
-- uses one local `JlinxHypercoreClient` and N instances of `JlinxHttpClient` for remove servers
-- 
+https://github.com/jlinclabs/jlinx-cli
 
-```
 
+### jlinx-http-server
 
-Jlinx Agent
-  has one of everything and can do everything
-  can use other agents as proxy??
-  each action (createDid, resolveDid, updateDid) either 
-    A) uses hypercore directly
-    B) uses a remote agent over the wire (http)
-  the agent id is its public key
-
-
-if agents can call upon other agents to host documents for them…
-
-
-Jinx App
-  |- KeyStore
-    |- filesystem
-  |- DidTracker
-    |- filesystem
-  |- Jlinx DID Client
-    |- actions: resolve did, create did, amend did
-      |- Jlinx Server || Jlinx Server HTTP Proxy
-  
-
-CLI
-  |_ JlinxApp
-    |- filesystem
-    |- JlinxClient
-    |- JlinxServer
-
-JlinxClient
-  |- http
-
-JlinxServer
-  |- filesystem
-  |- hypercore
-
-```
-
-## Jlinx client apps
-
-- track dids
-- store keys
-- talk to a jlinx server
-
-## JlinxClient
-
-- talk to a local or remote jlinx server
-- has a keyStore
-- has a didStore
-  - depending on the did actions are either sent to a local or remote did server
-
-## JlinxServer
-
-(move all hypercore stuff here)
-
-- has a keyStore
-- has a Hyperswarm
-- has a CoreStore
-- manages connection to hyperswarm
-- replicates did documents across swarm
-
-## KeyStore
-
-- stores crypto keys safely 
-
-
-
-### Actions
-
-- resolve(did)
-- create()
-- amend(did, signedJwtOfNewDidDocument)
-
-```js
-// REST API
-get(`${host}/${did})              // resolve
-post(`${host}/${did}`, signedJWT) // amend
-post(`${host}/new`)               // create
-```
-
-
-```
-CLI -> JlinxClient 
-        L-> JlinxServer(localhost)
-        L-> JlinxServer(jlix.io)
-JlinxServer -> hyperswarm
-```
-
-## KeyStore
-
-- stores your keypairs. 
-- depending on the system it picks different storage strategies
-
-## DidStore
-
-- has a keystore
-- did read from core
-- stores a list of dids you track on disk
-- needs a KeyPairStore to store didKeyPairs
-  - this is the same KeyPairStore on devices that can hypercore
-
-
-## apps
-
-### DID Host (DID Server)
-
-an http server that responds to the DID Rest API
-
-### Did CLI
-
-the CLI uses 
-- JlinxClient
-- JlinxServer
-
-### Did Desktop / Mobile
-
-
-## Apps that cannot hyperswarm directly
-
-1. you ask the did server to host a did for you
-2. it gives you back a did (and a secret)
-3. you create a did document locally storing 
-4. post it back to the server as a JWT signed with the exact signing key thats in the did document, and include the secret as a param
-5. the did server checks the secret, verifies the jwt and writes the initial document as json to the core
-4. the did server writes the initial did document to the core
-
-
-```js
-const jlinx = JlinxClient({
-  storagePath: '....',
-  // keyPairVault
-  // either
-})
-jlinx.keys.create()
-jlinx.keys.all()
-jlinx.keys.get(publicKey)
-
-jlinx.servers // -> set|map
-
-jlinx.createDidDocument({
-  signingKeyPair, // optional else created for you
-  encryptingKeyPair, // optional else created for you
-  hosted: false || jlinx.servers || [serverHost, serverHost]
-})
-jlinx.getDidDocument(did)
-// // decide which signing and encrypting keys you want to use for your did document
-// const signingKeyPair = await keyPairVault.createSigningKeyPair()
-// const encryptingKeyPair = await keyPairVault.createEncryptingKeyPair()
-```
-
-## Usage
-
-```js
-import { DidClient, Keychain } from 'jlinx'
-const keys = new Keychain({ })
-keys.gener
-const DIDS = new DidClient({ keychain })
-
-await DIDS.mine()
-
-const didDocument = await DIDS.get(`did:hyp:XFNojZsnJckWK1ks1MmrIJ3Pa9viXV85uVSftjS6WAA`)
-didDocument === {
-  "@context": 'https://w3id.org/did/v1',
-  id: 'did:hyp:XFNojZsnJckWK1ks1MmrIJ3Pa9viXV85uVSftjS6WAA',
-  created: '2018-10-13T17:00:00Z',
-  publicKey: [
-    {
-      id: 'did:hyp:XFNojZsnJckWK1ks1MmrIJ3Pa9viXV85uVSftjS6WAA#signing',
-      type: 'ed25519',
-      owner: 'did:hyp:XFNojZsnJckWK1ks1MmrIJ3Pa9viXV85uVSftjS6WAA',
-      publicKeyBase64: 'XFNojZsnJckWK1ks1MmrIJ3Pa9viXV85uVSftjS6WAA'
-    }
-  ]
-}
-```
-
-Also see the 
-[jlinx-cli](./cli#readme) 
-and 
-[jlinx-http-server](./http-server#readme)
+https://github.com/jlinclabs/jlinx-http-server
 
 
