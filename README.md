@@ -16,9 +16,9 @@ using the
 https://github.com/jlinclabs/jlinx-core
 
 
-### jlinx-client
+### jlinx-http-client
 
-https://github.com/jlinclabs/jlinx-client
+https://github.com/jlinclabs/jlinx-http-client
 
 
 ### jlinx-server
