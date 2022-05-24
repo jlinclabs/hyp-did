@@ -7,37 +7,92 @@ using the
 [SPEC](./SPEC.md)
 
 
-## node modules
+## TODO
 
+rename 
+```
+jlinx-core -> jlinx-util
+jlinx-server -> jlinx-node
+jlinx-app -> jlinx-client
+```
 
+## "Dependency" Tree
 
-### jlinx-core
+```
+jlinx-util
+ |
+ |\
+ | \- jlinx-node
+ |     |   \- jlinx-http-server
+ |     |             |
+ |     |    /- jlinx-http-node
+ |     |   /
+ |     |  /
+ |- jlinx-client
+    |
+    \- jlinx-cli
+    |
+    \- jlinx-desktop
+```
+## Modules
 
-https://github.com/jlinclabs/jlinx-core
+### jlinx-util
 
+https://github.com/jlinclabs/jlinx-util
 
-### jlinx-http-client
+Depencencies
+- lib-sodium
 
-https://github.com/jlinclabs/jlinx-http-client
+### jlinx-node
 
+https://github.com/jlinclabs/jlinx-node
 
-### jlinx-server
+Depencencies
+- jlinx-util
+- hypercore
 
-https://github.com/jlinclabs/jlinx-server
+### jlinx-client
 
+https://github.com/jlinclabs/jlinx-client
 
-### jlinx-app
+Depencencies
+- jlinx-util
+- jlinx-node
+- jlinx-http-node
 
-https://github.com/jlinclabs/jlinx-app
-
+talks to one or more jlinx-node instances
 
 ### jlinx-cli
 
 https://github.com/jlinclabs/jlinx-cli
+
+Depencencies
+- jlinx-client
+
+### jlinx-desktop
+
+https://github.com/jlinclabs/jlinx-desktop
+
+Depencencies
+- jlinx-client
+
+
 
 
 ### jlinx-http-server
 
 https://github.com/jlinclabs/jlinx-http-server
 
+Depencencies
+- jlinx-node
 
+exposes the jlinx-node api over http to the jlinc-http-server
+
+### jlinx-http-node
+
+https://github.com/jlinclabs/jlinx-http-node
+
+Depencencies
+- jlinx-util
+
+api parody of jlinx-node api talking to a jlinc-http-server
