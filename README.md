@@ -6,16 +6,6 @@ using the
 
 [SPEC](./SPEC.md)
 
-
-## TODO
-
-rename 
-```
-jlinx-core -> jlinx-util
-jlinx-server -> jlinx-node
-jlinx-app -> jlinx-client
-```
-
 ## "Dependency" Tree
 
 ```

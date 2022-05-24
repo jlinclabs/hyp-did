@@ -16,9 +16,9 @@
 [submodule "http-server"]
 	path = http-server
 	url = https://github.com/jlinclabs/jlinx-http-server.git
-[submodule "http-client"]
-	path = http-client
-	url = https://github.com/jlinclabs/jlinx-http-client.git
+[submodule "http-node"]
+	path = http-node
+	url = https://github.com/jlinclabs/jlinx-http-node.git
 [submodule "cli"]
 	path = cli
 	url = https://github.com/jlinclabs/jlinx-cli.git
