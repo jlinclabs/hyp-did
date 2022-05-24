@@ -1,3 +1,27 @@
-[submodule "core"]
-	path = core
-	url = https://github.com/jlinclabs/jlinx-core.git
+[submodule "util"]
+	path = util
+	url = https://github.com/jlinclabs/jlinx-util.git
+[submodule "node"]
+	path = node
+	url = https://github.com/jlinclabs/jlinx-node.git
+[submodule "client"]
+	path = client
+	url = https://github.com/jlinclabs/jlinx-client.git
+[submodule "node"]
+	path = node
+	url = https://github.com/jlinclabs/jlinx-node.git
+[submodule "chat"]
+	path = chat
+	url = https://github.com/jlinclabs/jlinx-chat.git
+[submodule "http-server"]
+	path = http-server
+	url = https://github.com/jlinclabs/jlinx-http-server.git
+[submodule "http-client"]
+	path = http-client
+	url = https://github.com/jlinclabs/jlinx-http-client.git
+[submodule "cli"]
+	path = cli
+	url = https://github.com/jlinclabs/jlinx-cli.git
+[submodule "desktop"]
+	path = desktop
+	url = https://github.com/jlinclabs/jlinx-desktop.git
