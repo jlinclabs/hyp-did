@@ -24,6 +24,7 @@ jlinx-util
     |
     \- jlinx-desktop
 ```
+
 ## Modules
 
 ### jlinx-util

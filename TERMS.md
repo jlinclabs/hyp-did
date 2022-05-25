@@ -5,13 +5,18 @@
 
 a crypto keypair
 
-## Author Keys
+## Host Keys
 
-a signing key pair used to sign changed to a document you author
+the signing keypairs used by the jlinx-node that host the document
+
+## Owner Keys
+
+the signing key pair used to sign changed to a document you own
 
 ## Read Key
 
-A secret used to decrypt the blocks of an encrypted document
+A secret given along with the document id used to decrypt the
+blocks of an encrypted document
 
 ## Document
 
