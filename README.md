@@ -6,9 +6,140 @@ using the
 
 [SPEC](./SPEC.md)
 
-## "Dependency" Tree
+
+
+
+
+
+
+
+
+
+
+client      <->      Node
+            create->Core
+            get->Core(getLength,getEntry,append)
+
+client      <->      remoteHttpNode      <->      httpNode                <->      host      <->      Node
+            create                       create                                              create      
+            get                          getEntry(length-in-http-header)                     get    
+                                         append                                      
+
+
+
+# Data Flow                                     
 
 ```
+client <-> host <-> node
+OR
+client <-> remoteHttpHost <-> hostHttpApi <-> host <-> node
+```
+
+## Client
+
+### State
+
+- set of document ids relevant to you
+- document owner signing keys
+- document encryption keys
+
+### API
+
+```
+client.host.create
+client.host.get
+```
+
+## RemoteHttpHost
+
+### State
+
+none :D
+
+### API
+
+```
+host.create()
+  const id = http.post(host/create)
+  return new Document(this, id)
+host.get 
+  new Document(this, id)
+host._getEntry
+host._append
+```
+
+## HostHttpServer
+
+### State
+
+none :D
+
+### API
+
+```
+POST /create
+
+GET /:id FUTURE (stream entire file)
+
+GET /:id/:index
+```
+
+
+## Host
+
+### State
+
+- hypercore private keys
+- hypercore data contents
+
+## node
+
+### State
+
+none :D
+
+
+
+
+
+
+
+
+
+
+
+
+## "Dependency" Tree
+
+jlinc-client -1:N-> jlinc-host -1:1-> jlinc-node
+
+
+- jlinx-node: talks to hypercore
+  - has a public key
+- jlinx-host: owns documents
+  - hosts documents
+    - protects document private keys
+  - exposed over http and RPC
+- jlinx-client: talks to hosts
+
+
+
+
+```
+          swarm
+       /         \              \
+      /           \              \
+jlinc-client    jlinc-client    jlinc-client
+     |               |               |
+jlinx-host(A)   jlinx-host(B)   desktop app
+     |        /
+     |       /
+     |      /
+jlinx-client
+     |
+some-web-app
+
+
 jlinx-util
  |
  |\
