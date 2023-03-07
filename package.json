@@ -1,0 +1,21 @@
+{
+  "name": "jlinx",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Monorepo for JLINX NPM packages",
+  "repository": "git@github.com:jlinclabs/jlinx.git",
+  "author": "Jared Grippe <jared@jlinc.com>",
+  "contributors": [
+    "Victor Grey <victor@jlinc.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [],
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

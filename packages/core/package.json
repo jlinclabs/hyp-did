@@ -1,0 +1,21 @@
+{
+  "name": "@jlinx/core",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "JLINX Core library",
+  "repository": "git@github.com:jlinclabs/jlinx.git",
+  "author": "Jared Grippe <jared@jlinc.com>",
+  "contributors": [
+    "Victor Grey <victor@jlinc.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [],
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "events": "^3.3.0"
+  }
+}

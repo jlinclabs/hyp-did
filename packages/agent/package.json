@@ -1,0 +1,20 @@
+{
+  "name": "@jlinx/agent",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "JLINX Agent",
+  "repository": "git@github.com:jlinclabs/jlinx.git",
+  "author": "Jared Grippe <jared@jlinc.com>",
+  "contributors": [
+    "Victor Grey <victor@jlinc.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [],
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@jlinx/core": "link:../core"
+  }
+}

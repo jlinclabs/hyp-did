@@ -1,0 +1,12 @@
+lockfileVersion: 5.4
+
+importers:
+
+  .:
+    specifiers: {}
+
+  packages/agent:
+    specifiers:
+      '@jlinx/core': link:../core
+    dependencies:
+      '@jlinx/core': link:../core
