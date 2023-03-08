@@ -1,9 +1,10 @@
 {
   "name": "@jlinx/core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "JLINX Core library",
   "repository": "git@github.com:jlinclabs/jlinx.git",
+  "homepage": "https://github.com/jlinclabs/jlinx/tree/master/packages/core#readme",
   "author": "Jared Grippe <jared@jlinc.com>",
   "contributors": [
     "Victor Grey <victor@jlinc.com>"

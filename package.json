@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Monorepo for JLINX NPM packages",
   "repository": "git@github.com:jlinclabs/jlinx.git",
+  "homepage": "https://github.com/jlinclabs/jlinx/tree/master#readme",
   "author": "Jared Grippe <jared@jlinc.com>",
   "contributors": [
     "Victor Grey <victor@jlinc.com>"

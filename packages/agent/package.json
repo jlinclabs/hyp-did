@@ -4,6 +4,7 @@
   "type": "module",
   "description": "JLINX Agent",
   "repository": "git@github.com:jlinclabs/jlinx.git",
+  "homepage": "https://github.com/jlinclabs/jlinx/tree/master/packages/agent#readme",
   "author": "Jared Grippe <jared@jlinc.com>",
   "contributors": [
     "Victor Grey <victor@jlinc.com>"
