@@ -17,7 +17,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "publish:status": "pnpm changeset status --verbose",
+    "publish": "pnpm publish -r"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.0"
