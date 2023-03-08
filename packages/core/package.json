@@ -1,6 +1,6 @@
 {
   "name": "@jlinx/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "JLINX Core library",
   "repository": "git@github.com:jlinclabs/jlinx.git",
