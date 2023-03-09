@@ -1,0 +1,26 @@
+{
+  "name": "@jlinx/dids",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "JLINX Web Host",
+  "repository": "git@github.com:jlinclabs/jlinx.git",
+  "homepage": "https://github.com/jlinclabs/jlinx/tree/master/packages/dids#readme",
+  "author": "Jared Grippe <jared@jlinc.com>",
+  "contributors": [
+    "Victor Grey <victor@jlinc.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [],
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@jlinx/core": "^0.1.2",
+    "did-resolver": "^4.0.1",
+    "dids": "^3.4.0",
+    "web-did-resolver": "^2.0.21",
+    "key-did-provider-ed25519": "^2.0.1",
+    "key-did-resolver": "^2.3.0"
+  }
+}

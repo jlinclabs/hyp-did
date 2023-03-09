@@ -1,0 +1,24 @@
+{
+  "name": "@jlinx/crypto",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "JLINX Web Host",
+  "repository": "git@github.com:jlinclabs/jlinx.git",
+  "homepage": "https://github.com/jlinclabs/jlinx/tree/master/packages/crypto#readme",
+  "author": "Jared Grippe <jared@jlinc.com>",
+  "contributors": [
+    "Victor Grey <victor@jlinc.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [],
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "uint8arrays": "^3.1.1",
+    "sodium-universal": "^3.1.0",
+    "@stablelib/ed25519": "^1.0.3",
+    "@stablelib/x25519": "^1.0.3"
+  }
+}
